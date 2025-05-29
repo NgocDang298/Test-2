@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SubjectResponse {
-    private Integer id;
+    private Long id;
     private String name;
     private String description;
 

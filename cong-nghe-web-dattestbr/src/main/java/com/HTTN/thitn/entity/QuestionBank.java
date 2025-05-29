@@ -20,7 +20,7 @@ public class QuestionBank {
     private String questionText;
 
     @Column(name = "question_type", nullable = false, length = 20)
-    private String questionType;
+    private Integer questionType;
 
     @Column(nullable = false)
     private Integer difficulty;

@@ -1,9 +1,8 @@
 package com.HTTN.thitn.service;
 
-import com.HTTN.thitn.entity.Answer;
-import com.HTTN.thitn.entity.EssayAnswer;
-import com.HTTN.thitn.entity.Submission;
+import com.HTTN.thitn.entity.*;
 import com.HTTN.thitn.repository.AnswerRepository;
+import com.HTTN.thitn.repository.ChoiceRepository;
 import com.HTTN.thitn.repository.EssayAnswerRepository;
 import com.HTTN.thitn.repository.SubmissionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,29 +19,63 @@ public class GradingService {
 
     @Autowired
     private AnswerRepository answerRepository;
+    @Autowired
+    private ChoiceRepository choiceRepository;
 
     @Autowired
     private EssayAnswerRepository essayAnswerRepository;
 
-    public Submission gradeSubmission(Integer submissionId, String userRole) {
-        if (!userRole.equals("teacher") && !userRole.equals("admin")) {
-            throw new SecurityException("Only teachers or admins can grade submissions");
-        }
+    public Submission gradeSubmission(Integer submissionId, User user) {
         Submission submission = submissionRepository.findById(submissionId)
                 .orElseThrow(() -> new EntityNotFoundException("Submission not found with id: " + submissionId));
+
+        // Kiểm tra người dùng có đúng là người nộp bài không
+        if (!submission.getUser().getId().equals(user.getId())) {
+            throw new SecurityException("Bạn không có quyền xem điểm bài này.");
+        }
 
         float score = 0.0f;
         List<Answer> answers = answerRepository.findBySubmission(submission);
         for (Answer answer : answers) {
-            if (answer.getChosenChoice() != null && answer.getChosenChoice().getIsCorrect()) {
-                score += 1.0f; // Assume 1 point per correct multiple_choice or true_false answer
+            Question question = answer.getQuestion();
+            int type = question.getQuestionBank().getQuestionType(); // int: 1=MCQ, 2=MSQ, 3=True/False, 4=Short Answer
+
+            switch (type) {
+                case 1: // multiple_choice
+                case 3: // true_false
+                    if (answer.getChosenChoice() != null && answer.getChosenChoice().getIsCorrect()) {
+                        score += 1.0f;
+                    }
+                    break;
+
+                case 2: // multiple_select
+                    // Lấy danh sách đáp án đúng cho câu hỏi
+                    List<Choice> correctChoices = choiceRepository.findByQuestionBankAndIsCorrectTrue(question.getQuestionBank());
+                    // Lấy danh sách đáp án học sinh chọn
+                    List<Choice> selectedChoices = answer.getSelectedChoices(); // cần đảm bảo có phương thức này
+
+                    // So sánh xem học sinh chọn đúng toàn bộ và không chọn thừa
+                    if (selectedChoices != null &&
+                            selectedChoices.containsAll(correctChoices) &&
+                            correctChoices.containsAll(selectedChoices)) {
+                        score += 1.0f;
+                    }
+                    break;
+
+                case 4: // short_answer
+                    // Bỏ qua, cần chấm tay
+                    break;
+
+                default:
+                    throw new IllegalStateException("Unknown question type: " + type);
             }
         }
 
-        // Essay answers require manual grading, score is not updated here
+
         submission.setScore(score);
         return submissionRepository.save(submission);
     }
+
 
     public EssayAnswer gradeEssayAnswer(Integer essayAnswerId, Float score, String userRole) {
         if (!userRole.equals("teacher") && !userRole.equals("admin")) {

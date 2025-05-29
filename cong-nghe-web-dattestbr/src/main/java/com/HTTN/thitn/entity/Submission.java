@@ -26,7 +26,8 @@ public class Submission {
     @DecimalMin(value = "0.0", inclusive = true, message = "Score must be >= 0.0")
     @DecimalMax(value = "10.0", inclusive = true, message = "Score must be <= 10.0")
     private Float score = 0.0f;
-
-    @Column(name = "submitted_at", nullable = false)
-    private LocalDateTime submittedAt = LocalDateTime.now();
+    private LocalDateTime submitTime ;
+    private Integer status;
+    @Column(name = "start_time", nullable = false)
+    private LocalDateTime startTime = LocalDateTime.now();
 }

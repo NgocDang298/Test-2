@@ -30,24 +30,24 @@ public class AdminSubjectController {
     }
 
     @PostMapping("/{id}/approve")
-    public ResponseEntity<Void> approveSubject(@PathVariable Integer id) {
+    public ResponseEntity<Void> approveSubject(@PathVariable Long id) {
         subjectService.approveSubject(id);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/reject")
-    public ResponseEntity<Void> rejectSubject(@PathVariable Integer id) {
+    public ResponseEntity<Void> rejectSubject(@PathVariable Long id) {
         subjectService.rejectSubject(id);
         return ResponseEntity.ok().build();
     }
     @PostMapping("/{subjectId}/assign-teacher/{teacherId}")
-    public ResponseEntity<Void> assignTeacher(@PathVariable Integer subjectId, @PathVariable Integer teacherId) {
+    public ResponseEntity<Void> assignTeacher(@PathVariable Long subjectId, @PathVariable Long teacherId) {
         subjectService.assignTeacherToSubject(subjectId, teacherId);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{subjectId}/remove-teacher/{teacherId}")
-    public ResponseEntity<Void> removeTeacher(@PathVariable Integer subjectId, @PathVariable Integer teacherId) {
+    public ResponseEntity<Void> removeTeacher(@PathVariable Long subjectId, @PathVariable Long teacherId) {
         subjectService.removeTeacherFromSubject(subjectId, teacherId);
         return ResponseEntity.ok().build();
     }
@@ -62,13 +62,14 @@ public class AdminSubjectController {
         Subject subject = new Subject();
         subject.setName(request.getName());
         subject.setDescription(request.getDescription());
+        subject.setStatus(1);
         Subject createdSubject = subjectService.createSubject(subject);
         return ResponseEntity.status(HttpStatus.CREATED).body(new SubjectResponse(createdSubject));
     }
 
     @PutMapping("/{id}")
 
-    public ResponseEntity<SubjectResponse> updateSubject(@PathVariable Integer id, @Valid @RequestBody SubjectRequest request) {
+    public ResponseEntity<SubjectResponse> updateSubject(@PathVariable Long id, @Valid @RequestBody SubjectRequest request) {
         Subject subject = new Subject();
         subject.setName(request.getName());
         subject.setDescription(request.getDescription());
@@ -78,13 +79,13 @@ public class AdminSubjectController {
 
     @DeleteMapping("/{id}")
 
-    public ResponseEntity<Void> deleteSubject(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteSubject(@PathVariable Long id) {
         subjectService.deleteSubject(id);
         return ResponseEntity.noContent().build();
     }
     //admin thêm,xóa,tìm học sinh từ môn học
     @PostMapping("/{subjectId}/students/{studentId}")
-    public ResponseEntity<?> addStudentToSubject(@PathVariable Integer subjectId, @PathVariable Long studentId) {
+    public ResponseEntity<?> addStudentToSubject(@PathVariable Long subjectId, @PathVariable Long studentId) {
         boolean added = subjectService.addStudentToSubject(subjectId, studentId);
         if (added) {
             return ResponseEntity.ok().body("Học sinh đã được thêm vào môn học.");
@@ -94,7 +95,7 @@ public class AdminSubjectController {
     }
 
     @DeleteMapping("/{subjectId}/students/{studentId}")
-    public ResponseEntity<?> removeStudentFromSubject(@PathVariable Integer subjectId, @PathVariable Long studentId) {
+    public ResponseEntity<?> removeStudentFromSubject(@PathVariable Long subjectId, @PathVariable Long studentId) {
         boolean removed = subjectService.removeStudentFromSubject(subjectId, studentId);
         if (removed) {
             return ResponseEntity.ok().body("Học sinh đã được xóa khỏi môn học.");
@@ -104,7 +105,7 @@ public class AdminSubjectController {
     }
 
     @GetMapping("/{subjectId}/students")
-    public ResponseEntity<?> getStudentsInSubject(@PathVariable Integer subjectId) {
+    public ResponseEntity<?> getStudentsInSubject(@PathVariable Long subjectId) {
         List<User> students = subjectService.getStudentsInSubject(subjectId);
         if (students == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Không tìm thấy môn học.");

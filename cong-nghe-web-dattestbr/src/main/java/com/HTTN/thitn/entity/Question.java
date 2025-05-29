@@ -6,10 +6,11 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "questions")
 @Data
+//bảng liên kết câu hỏi, đề thi
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "exam_id", nullable = false)

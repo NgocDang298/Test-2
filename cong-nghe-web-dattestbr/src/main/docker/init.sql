@@ -35,7 +35,24 @@ CREATE TABLE subjects (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) UNIQUE NOT NULL,
   description TEXT,
+  status INT NOT NULL DEFAULT 0, -- 0 là 'PENDING', 1 là 'APPROVED', 2 là 'REJECTED'
   created_at TIMESTAMP DEFAULT NOW()
+);
+
+--Bảng phân quyền môn hc cho giáo viên
+CREATE TABLE subject_teachers (
+  subject_id INTEGER REFERENCES subjects(id) ON DELETE CASCADE,
+  teacher_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  PRIMARY KEY (subject_id, teacher_id)
+);
+
+--Bảng phân quyền môn hc cho học sinh
+CREATE TABLE subject_students (
+    subject_id INT NOT NULL,
+    student_id BIGINT NOT NULL,
+    PRIMARY KEY (subject_id, student_id),
+    FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    FOREIGN KEY (student_id) REFERENCES users(id)
 );
 
 -- Bảng ngân hàng câu hỏi
@@ -43,7 +60,7 @@ CREATE TABLE question_bank (
   id SERIAL PRIMARY KEY,
   subject_id INTEGER REFERENCES subjects(id) ON DELETE CASCADE,
   question_text TEXT NOT NULL,
-  question_type VARCHAR(20) NOT NULL CHECK (question_type IN ('multiple_choice', 'true_false', 'short_answer')),
+  question_type INTEGER NOT NULL CHECK (question_type = ANY (ARRAY[1, 2, 3, 4])), --1 → multiple_choice  2 → multiple_select  3 → true_false  4 → short_answer
   difficulty INTEGER NOT NULL CHECK (difficulty BETWEEN 1 AND 3),
   created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
   created_at TIMESTAMP DEFAULT NOW()
@@ -81,7 +98,9 @@ CREATE TABLE submissions (
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   exam_id INTEGER REFERENCES exams(id) ON DELETE CASCADE,
   score FLOAT DEFAULT 0,
-  submitted_at TIMESTAMP DEFAULT NOW()
+  submit_time TIMESTAMP NULL,
+  status INTEGER DEFAULT 0, -- 0 là chưa nộp, 1 là đã nộp
+  start_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bảng câu trả lời trắc nghiệm

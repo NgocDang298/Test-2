@@ -4,12 +4,12 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class SubjectTeacherId implements Serializable {
-    private Integer subject;
-    private Integer teacher;
+    private Long subject;
+    private Long teacher;
 
     public SubjectTeacherId() {}
 
-    public SubjectTeacherId(Integer subject, Integer teacher) {
+    public SubjectTeacherId(Long subject, Long teacher) {
         this.subject = subject;
         this.teacher = teacher;
     }

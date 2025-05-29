@@ -4,9 +4,12 @@ import com.HTTN.thitn.entity.Subject;
 import com.HTTN.thitn.entity.SubjectTeacher;
 import com.HTTN.thitn.entity.User;
 import com.HTTN.thitn.repository.SubjectRepository;
+import com.HTTN.thitn.repository.SubjectStudentRepository;
 import com.HTTN.thitn.repository.SubjectTeacherRepository;
 import com.HTTN.thitn.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,8 @@ public class SubjectService {
     private UserRepository userRepository;
 
     @Autowired
+    private SubjectStudentRepository subjectStudentRepository;
+    @Autowired
     private SubjectTeacherRepository subjectTeacherRepository;
 
     public Subject createSubject(Subject subject) {
@@ -33,7 +38,7 @@ public class SubjectService {
         return subjectRepository.save(subject);
     }
 
-    public Subject updateSubject(Integer id, Subject subject) {
+    public Subject updateSubject(Long id, Subject subject) {
         Subject existingSubject = subjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subject not found with id: " + id));
 
@@ -46,23 +51,24 @@ public class SubjectService {
         return subjectRepository.save(existingSubject);
     }
 
-    public void deleteSubject(Integer id) {
+    public void deleteSubject(Long id) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subject not found with id: " + id));
         subjectRepository.delete(subject);
     }
 
-    public Subject getSubjectById(Integer id) {
+    public Subject getSubjectById(Long id) {
         return subjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subject not found with id: " + id));
     }
 
-    public List<Subject> getAllSubjects() {
-        return subjectRepository.findAll();
+    public List<Subject> getSubjectsByTeacher(User teacher) {
+        return subjectTeacherRepository.findSubjectsByTeacherId(teacher.getId());
     }
 
+
     // Phương thức để thêm giáo viên vào môn học
-    public void assignTeacherToSubject(Integer subjectId, Integer teacherId) {
+    public void assignTeacherToSubject(Long subjectId, Long teacherId) {
         Subject subject = subjectRepository.findById(subjectId)
                 .orElseThrow(() -> new EntityNotFoundException("Subject not found with id: " + subjectId));
 
@@ -82,7 +88,7 @@ public class SubjectService {
     }
 
     // Phương thức để xóa giáo viên khỏi môn học
-    public void removeTeacherFromSubject(Integer subjectId, Integer teacherId) {
+    public void removeTeacherFromSubject(Long subjectId, Long teacherId) {
         SubjectTeacher subjectTeacher = subjectTeacherRepository.findBySubjectIdAndTeacherId(subjectId, teacherId)
                 .orElseThrow(() -> new EntityNotFoundException("Teacher not assigned to this subject"));
 
@@ -94,14 +100,14 @@ public class SubjectService {
         return subjectTeacherRepository.findTeachersBySubjectId(subjectId);
     }
 
-    public void approveSubject(Integer id) {
+    public void approveSubject(Long id) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subject not found"));
         subject.setStatus(1);  // Gán trạng thái APPROVED (1)
         subjectRepository.save(subject);
     }
 
-    public void rejectSubject(Integer id) {
+    public void rejectSubject(Long id) {
         Subject subject = subjectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Subject not found"));
         subject.setStatus(2);  // Gán trạng thái REJECTED (2)
@@ -110,7 +116,9 @@ public class SubjectService {
     public List<Subject> getSubjectsByStatus(int status) {
         return subjectRepository.findByStatus(status);
     }
-    public boolean addStudentToSubject(Integer subjectId, Long studentId) {
+
+    @Transactional
+    public boolean addStudentToSubject(Long subjectId, Long studentId) {
         Optional<Subject> subjectOpt = subjectRepository.findById(subjectId);
         Optional<User> studentOpt = userRepository.findById(studentId);
         if (subjectOpt.isEmpty() || studentOpt.isEmpty()) {
@@ -120,17 +128,23 @@ public class SubjectService {
         Subject subject = subjectOpt.get();
         User student = studentOpt.get();
 
-        // Kiểm tra xem user có role STUDENT hay không
         if (!student.hasRole("STUDENT")) {
-            return false; // hoặc ném exception nếu muốn
+            return false;
         }
 
-        // Thêm học sinh vào môn học
+        // Khởi tạo tập hợp lazy-loaded
+        Hibernate.initialize(subject.getStudents());
+        Hibernate.initialize(student.getEnrolledSubjects());
+
+        // Thêm và đồng bộ quan hệ hai chiều
         subject.getStudents().add(student);
+        student.getEnrolledSubjects().add(subject);
+
+        // Lưu thay đổi
         subjectRepository.save(subject);
         return true;
     }
-    public boolean removeStudentFromSubject(Integer subjectId, Long studentId) {
+    public boolean removeStudentFromSubject(Long subjectId, Long studentId) {
         Optional<Subject> subjectOpt = subjectRepository.findById(subjectId);
         Optional<User> studentOpt = userRepository.findById(studentId);
         if (subjectOpt.isEmpty() || studentOpt.isEmpty()) {
@@ -145,7 +159,7 @@ public class SubjectService {
         return removed;
     }
 
-    public List<User> getStudentsInSubject(Integer subjectId) {
+    public List<User> getStudentsInSubject(Long subjectId) {
         Optional<Subject> subjectOpt = subjectRepository.findById(subjectId);
         if (subjectOpt.isEmpty()) {
             return null;
@@ -154,14 +168,10 @@ public class SubjectService {
         return new ArrayList<>(subject.getStudents());
     }
 
-    public List<Subject> getSubjectsForStudent(Long studentId) {
-        Optional<User> studentOpt = userRepository.findById(studentId);
-        if (studentOpt.isEmpty()) {
-            return Collections.emptyList();
-        }
-        User student = studentOpt.get();
-        return new ArrayList<>(student.getSubjects());
+    public List<Subject> getSubjectsByStudent(User student) {
+        return subjectStudentRepository.findSubjectsByStudentId(student.getId());
     }
+
 
 
 
