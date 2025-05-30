@@ -351,98 +351,114 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
 
         <div className="user-form-container">
           <div className="form-header">
-            <h3>{isEditing ? 'Cập nhật thông tin người dùng' : 'Thêm giáo viên mới'}</h3>
-            {isEditing && (
+            <h3>
+              {isEditing 
+                ? 'Cập nhật thông tin người dùng' 
+                : addingUserType 
+                  ? `Thêm ${addingUserType === 'teacher' ? 'giáo viên' : 'học sinh'} mới`
+                  : 'Chọn loại người dùng để thêm'
+              }
+            </h3>
+            {(isEditing || addingUserType) && (
               <button className="close-form-btn" onClick={resetForm}>
                 <i className="fas fa-times"></i>
               </button>
             )}
           </div>
           
-          <form className="user-form" onSubmit={isEditing ? (e) => { e.preventDefault(); handleUpdateUser(); } : handleAddUser}>
-            {!isEditing && (
+          {(isEditing || addingUserType) && (
+            <form className="user-form" onSubmit={isEditing ? (e) => { e.preventDefault(); handleUpdateUser(); } : handleAddUser}>
+              {!isEditing && (
+                <div className="form-group">
+                  <label>Tên đăng nhập *</label>
+                  <input
+                    type="text"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                    placeholder="Nhập tên đăng nhập"
+                  />
+                </div>
+              )}
+              
               <div className="form-group">
-                <label>Tên đăng nhập *</label>
+                <label>Họ và tên *</label>
                 <input
                   type="text"
-                  name="username"
-                  value={formData.username}
+                  name="fullname"
+                  value={formData.fullname}
                   onChange={handleChange}
                   required
-                  placeholder="Nhập tên đăng nhập"
+                  placeholder="Nhập họ và tên đầy đủ"
                 />
               </div>
-            )}
-            
-            <div className="form-group">
-              <label>Họ và tên *</label>
-              <input
-                type="text"
-                name="fullname"
-                value={formData.fullname}
-                onChange={handleChange}
-                required
-                placeholder="Nhập họ và tên đầy đủ"
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Email *</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="Nhập địa chỉ email"
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>Số điện thoại</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="Nhập số điện thoại"
-              />
-            </div>
-            
-            {!isEditing && (
+              
               <div className="form-group">
-                <label>Mật khẩu *</label>
+                <label>Email *</label>
                 <input
-                  type="password"
-                  name="password"
-                  value={formData.password}
+                  type="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
                   required
-                  placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
-                  minLength="6"
+                  placeholder="Nhập địa chỉ email"
                 />
               </div>
-            )}
-            
-            <div className="form-actions">
-              <button type="submit" className="btn-save">
-                {isEditing ? (
-                  <>
-                    <i className="fas fa-save"></i> Cập nhật
-                  </>
-                ) : (
-                  <>
-                    <i className="fas fa-plus"></i> Thêm giáo viên
-                  </>
-                )}
-              </button>
-              {isEditing && (
-                <button type="button" onClick={resetForm} className="btn-cancel">
-                  <i className="fas fa-times"></i> Hủy
-                </button>
+              
+              <div className="form-group">
+                <label>Số điện thoại</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  placeholder="Nhập số điện thoại"
+                />
+              </div>
+              
+              {!isEditing && (
+                <div className="form-group">
+                  <label>Mật khẩu *</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
+                    minLength="6"
+                  />
+                </div>
               )}
+              
+              <div className="form-actions">
+                <button type="submit" className="btn-save">
+                  {isEditing ? (
+                    <>
+                      <i className="fas fa-save"></i> Cập nhật
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-plus"></i> Thêm {addingUserType === 'teacher' ? 'giáo viên' : 'học sinh'}
+                    </>
+                  )}
+                </button>
+                {(isEditing || addingUserType) && (
+                  <button type="button" onClick={resetForm} className="btn-cancel">
+                    <i className="fas fa-times"></i> Hủy
+                  </button>
+                )}
+              </div>
+            </form>
+          )}
+          
+          {!isEditing && !addingUserType && (
+            <div className="empty-form-state">
+              <i className="fas fa-user-plus"></i>
+              <p>Chọn "Thêm giáo viên" hoặc "Thêm học sinh" để bắt đầu</p>
             </div>
-          </form>
+          )}
         </div>
       </div>
     </div>

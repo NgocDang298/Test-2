@@ -180,6 +180,54 @@
 }
 ```
 
+#### Register Student
+- **Endpoint**: `POST /api/admin/students/register`
+- **Headers**: 
+  - Authorization: Bearer {token}
+- **Request Body**:
+```json
+{
+    "username": "string",
+    "password": "string",
+    "fullname": "string",
+    "email": "string",
+    "phone": "string"
+}
+```
+- **Response**:
+```json
+{
+    "success": true,
+    "message": "Đã đăng ký thành công tài khoản cho sinh viên: {username}",
+    "data": null
+}
+```
+
+#### Search Users
+- **Endpoint**: `GET /api/admin/users/search`
+- **Headers**: 
+  - Authorization: Bearer {token}
+- **Query Parameters**:
+  - fullname (optional): string
+  - email (optional): string
+- **Response**:
+```json
+{
+    "success": true,
+    "message": "Kết quả tìm kiếm người dùng.",
+    "data": [
+        {
+            "id": "long",
+            "username": "string",
+            "fullname": "string",
+            "email": "string",
+            "phone": "string",
+            "role": "string"
+        }
+    ]
+}
+```
+
 ### Subject Management
 
 #### Get Pending Subjects

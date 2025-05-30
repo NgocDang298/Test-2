@@ -379,6 +379,27 @@
     margin-top: 8px;
 }
 
+.empty-form-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #64748b;
+    text-align: center;
+}
+
+.empty-form-state i {
+    font-size: 48px;
+    color: #cbd5e0;
+    margin-bottom: 16px;
+}
+
+.empty-form-state p {
+    font-size: 16px;
+    margin: 0;
+}
+
 .btn-save, .btn-cancel {
     padding: 12px 20px;
     border: none;
