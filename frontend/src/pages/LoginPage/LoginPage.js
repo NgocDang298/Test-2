@@ -1,53 +1,49 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
-import '../../services/AuthService'
 import { handleLogin } from '../../services/AuthService';
-import { jwtDecode } from 'jwt-decode';
-const LoginPage = ({ onLogin }) => {
+import useAuthStore from '../../stores/authStore';
+
+const LoginPage = () => {
   const navigate = useNavigate();
+  const { login, isLoading, error, clearError } = useAuthStore();
+  
   const [credentials, setCredentials] = useState({ username: '', password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [localError, setLocalError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials({ ...credentials, [name]: value });
     // Xóa thông báo lỗi khi người dùng bắt đầu nhập
-    if (error) setError('');
+    if (localError) setLocalError('');
+    if (error) clearError();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    setLocalError('');
 
     try {
       const response = await handleLogin(credentials);
-      console.log(response);
+      console.log('Login response:', response);
+      
       if (response.success === true) {
-
-        await localStorage.setItem('accessToken', response.data.token);
-        const decodedToken = jwtDecode(response.data.token);
-        localStorage.setItem('user', JSON.stringify(decodedToken));
-        onLogin(response.data.token);
-        // if (decodedToken.roles[0] === 'ADMIN') {
-        //   navigate('/admin')
-        // } else if (decodedToken.roles[0] === 'TEACHER') {
-        //   navigate('/teacher')
-        // } else if (decodedToken.roles[0] === 'STUDENT') {
-        //   navigate('/')
-        // }
+        // Sử dụng Zustand store để login
+        await login(response.data.accessToken);
+        
+        // Navigate dựa trên role (có thể lấy từ store sau khi login)
+        navigate('/');
+      } else {
+        setLocalError(response.message || 'Đăng nhập thất bại');
       }
-      navigate('/')
     } catch (err) {
-      console.log(err)
-      setError(err.response?.message || 'username hoặc mật khẩu không đúng');
-    } finally {
-      setLoading(false);
+      console.error('Login error:', err);
+      setLocalError(err.response?.data?.message || 'Username hoặc mật khẩu không đúng');
     }
   };
+
+  const displayError = localError || error;
 
   return (
     <div className="login-page">
@@ -59,13 +55,14 @@ const LoginPage = ({ onLogin }) => {
 
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">username</label>
+            <label htmlFor="username">Username</label>
             <div className="input-group">
-              <i className="fas fa-envelope"></i>
+              <i className="fas fa-user !pl-2"></i>
               <input
                 type="text"
                 id="username"
                 name="username"
+                className="!pl-10"
                 value={credentials.username}
                 onChange={handleChange}
                 placeholder="Nhập username của bạn"
@@ -78,7 +75,7 @@ const LoginPage = ({ onLogin }) => {
           <div className="form-group">
             <label htmlFor="password">Mật khẩu</label>
             <div className="input-group">
-              <i className="fas fa-lock"></i>
+              <i className="fas fa-lock !pl-2"></i>
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -86,6 +83,7 @@ const LoginPage = ({ onLogin }) => {
                 value={credentials.password}
                 onChange={handleChange}
                 placeholder="Nhập mật khẩu"
+                className="!pl-10"
                 required
                 autoComplete="current-password"
               />
@@ -109,19 +107,19 @@ const LoginPage = ({ onLogin }) => {
             </Link>
           </div>
 
-          {error && (
+          {displayError && (
             <div className="error-message">
               <i className="fas fa-exclamation-circle"></i>
-              {error}
+              {displayError}
             </div>
           )}
 
           <button
             type="submit"
             className="login-button"
-            disabled={loading}
+            disabled={isLoading}
           >
-            {loading ? (
+            {isLoading ? (
               <>
                 <div className="spinner"></div>
                 <span>Đang đăng nhập...</span>

@@ -8,23 +8,23 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
             setLoading(false);
             return;
         }
 
         try {
-            const decoded = jwtDecode(token);
+            const decoded = jwtDecode(accessToken);
             console.log('decode', decoded)
             const role = decoded.roles[0] || decoded.user?.roles[0];
             setIsAuthenticated(true);
             setUserRole(role);
-            console.log('check token', token, allowedRoles, "token role", role)
+            console.log('check accessToken', accessToken, allowedRoles, "accessToken role", role)
 
         } catch (error) {
-            console.error("Invalid token:", error);
-            localStorage.removeItem('token');
+            console.error("Invalid accessToken:", error);
+            localStorage.removeItem('accessToken');
         }
 
         setLoading(false);

@@ -1,0 +1,214 @@
+.user-management {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.user-management-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-management-header .ant-btn {
+  height: 40px;
+  border-radius: 8px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.user-management-header .ant-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.user-table {
+  margin: 0;
+}
+
+.user-table .ant-table {
+  border-radius: 0;
+}
+
+.user-table .ant-table-thead > tr > th {
+  background: #fafbfc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #374151;
+  padding: 16px;
+}
+
+.user-table .ant-table-tbody > tr > td {
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.user-table .ant-table-tbody > tr:hover > td {
+  background: #f8fafc;
+}
+
+.user-table .ant-btn {
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.user-table .ant-btn:hover {
+  transform: translateY(-1px);
+}
+
+.user-table .ant-tag {
+  border-radius: 6px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: none;
+}
+
+/* Modal styles */
+.ant-modal .ant-modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 8px 8px 0 0;
+  border-bottom: none;
+  padding: 20px 24px;
+}
+
+.ant-modal .ant-modal-title {
+  color: white;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.ant-modal .ant-modal-close {
+  color: white;
+  top: 16px;
+  right: 16px;
+}
+
+.ant-modal .ant-modal-close:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.ant-modal .ant-modal-body {
+  padding: 24px;
+}
+
+.user-form .ant-form-item-label > label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.user-form .ant-input,
+.user-form .ant-input-password,
+.user-form .ant-select-selector {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  transition: all 0.3s ease;
+}
+
+.user-form .ant-input:focus,
+.user-form .ant-input-password:focus,
+.user-form .ant-select-focused .ant-select-selector {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+.user-form .ant-input:hover,
+.user-form .ant-input-password:hover,
+.user-form .ant-select:hover .ant-select-selector {
+  border-color: #667eea;
+}
+
+.form-actions {
+  margin-top: 2rem;
+  margin-bottom: 0;
+  text-align: right;
+}
+
+.form-actions .ant-btn {
+  border-radius: 8px;
+  font-weight: 500;
+  height: 40px;
+  padding: 0 24px;
+  margin-left: 12px;
+}
+
+.form-actions .ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.form-actions .ant-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* Pagination styles */
+.user-table .ant-pagination {
+  margin: 24px;
+  text-align: center;
+}
+
+.user-table .ant-pagination-item {
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+}
+
+.user-table .ant-pagination-item-active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+}
+
+.user-table .ant-pagination-item-active a {
+  color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .user-management-header {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .user-table .ant-table-tbody > tr > td,
+  .user-table .ant-table-thead > tr > th {
+    padding: 12px 8px;
+  }
+  
+  .user-table .ant-btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .ant-modal {
+    margin: 10px;
+    max-width: calc(100vw - 20px);
+  }
+}
+
+@media (max-width: 480px) {
+  .user-table .ant-table {
+    font-size: 12px;
+  }
+  
+  .user-table .ant-table-tbody > tr > td,
+  .user-table .ant-table-thead > tr > th {
+    padding: 8px 4px;
+  }
+  
+  .form-actions {
+    text-align: center;
+  }
+  
+  .form-actions .ant-btn {
+    width: 100%;
+    margin: 4px 0;
+  }
+} 

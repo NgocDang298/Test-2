@@ -1,51 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, useNavigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Navbar from './components/Layout/Navbar/Navbar';
 import Footer from './components/Layout/Footer/Footer';
 import AppRoutes from './routes/Index';
-
+import useAuthStore from './stores/authStore';
+import './App.css';
 
 function App() {
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        console.log('check navbar decode', decoded)
-        setUser(decoded.sub || decoded);
-        console.log('check navbar user', user)
-      } catch {
-        localStorage.removeItem('token');
-      }
-    }
-  }, []);
+  const { 
+    user, 
+    isAuthenticated, 
+    isLoading, 
+    initializeAuth, 
+    logout 
+  } = useAuthStore();
 
-  const onLogin = (token) => {
-    localStorage.setItem('token', token);
-    try {
-      const decoded = jwtDecode(token);
-      setUser(decoded.sub || decoded); // Cập nhật user đúng
-    } catch (error) {
-      console.error('Invalid token');
-      localStorage.removeItem('token');
-      setUser(null);
-    }
-  };
+  useEffect(() => {
+    // Khởi tạo auth khi app load
+    initializeAuth();
+  }, [initializeAuth]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setUser(null);
+    logout();
   };
+
+  // Hiển thị loading khi đang khởi tạo auth
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="mb-4 animate-spin">
+          <i className="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+        </div>
+        <div className="text-lg text-gray-600">Đang tải...</div>
+      </div>
+    );
+  }
 
   return (
     <Router>
-      <Navbar user={user} onLogout={handleLogout} />
-      <main className="content">
-        <AppRoutes user={user} onLogin={onLogin} onLogout={handleLogout} />
-      </main>
-      <Footer />
+      <div className="app-container">
+        <Navbar onLogout={handleLogout} />
+        <main className="main-content">
+          <AppRoutes user={user} isAuthenticated={isAuthenticated} onLogout={handleLogout} />
+        </main>
+        <Footer />
+      </div>
     </Router>
   );
 }

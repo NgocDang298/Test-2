@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import useAuth from '../../../hooks/useAuth';
 import './Navbar.css';
 
-const Navbar = ({ user, onLogout }) => {
+const Navbar = ({ onLogout }) => {
+  const { user, isAuthenticated, isAdmin, isTeacher, isStudent, logout } = useAuth();
+  console.log('Navbar received user:', user);
+  console.log('User role:', user?.role);
+  console.log('Is authenticated:', isAuthenticated);
+  
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  
   // Xử lý scroll để thay đổi style của navbar
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +42,8 @@ const Navbar = ({ user, onLogout }) => {
 
   const handleLogout = () => {
     setIsUserMenuOpen(false);
-    onLogout();
+    logout();
+    if (onLogout) onLogout();
     navigate('/login');
   };
 
@@ -54,31 +62,63 @@ const Navbar = ({ user, onLogout }) => {
 
         {/* Navigation links */}
         <div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
-          <Link to="/exams" className={location.pathname === '/exams' ? 'active' : ''}>
-            <i className="fas fa-file-alt"></i>
-            <span>Danh sách bài thi</span>
-          </Link>
-          <Link to="/statistics" className={location.pathname === '/statistics' ? 'active' : ''}>
-            <i className="fas fa-chart-bar"></i>
-            <span>Thống kê</span>
-          </Link>
-          {user?.role === 'admin' && (
-            <Link to="/admin" className={location.pathname === '/admin' ? 'active' : ''}>
-              <i className="fas fa-cog"></i>
-              <span>Quản lý</span>
-            </Link>
+          {isAuthenticated && (
+            <>
+              {/* Student navigation */}
+              {isStudent() && (
+                <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
+                  <i className="fas fa-file-alt"></i>
+                  <span>Danh sách bài thi</span>
+                </Link>
+              )}
+              
+              {/* Teacher navigation */}
+              {(isTeacher() || isAdmin()) && (
+                <Link to="/exams" className={location.pathname === '/exams' ? 'active' : ''}>
+                  <i className="fas fa-file-alt"></i>
+                  <span>Quản lý bài thi</span>
+                </Link>
+              )}
+              
+              {/* Statistics for teachers and admins */}
+              {(isTeacher() || isAdmin()) && (
+                <Link to="/statistics" className={location.pathname === '/statistics' ? 'active' : ''}>
+                  <i className="fas fa-chart-bar"></i>
+                  <span>Thống kê</span>
+                </Link>
+              )}
+              
+              {/* Admin panel */}
+              {isAdmin() && (
+                <Link to="/admin" className={location.pathname === '/admin' ? 'active' : ''}>
+                  <i className="fas fa-cog"></i>
+                  <span>Quản lý Admin</span>
+                </Link>
+              )}
+              
+              {/* Teacher panel */}
+              {isTeacher() && (
+                <Link to="/teacher" className={location.pathname === '/teacher' ? 'active' : ''}>
+                  <i className="fas fa-chalkboard-teacher"></i>
+                  <span>Quản lý Giáo viên</span>
+                </Link>
+              )}
+            </>
           )}
         </div>
 
         {/* User menu */}
         <div className="user-menu">
-          {user ? (
+          {isAuthenticated && user ? (
             <div className="user-menu-container">
               <button className="user-menu-button" onClick={toggleUserMenu}>
                 <div className="user-avatar">
                   <i className="fas fa-user"></i>
                 </div>
-                <span className="user-name">{user.name}</span>
+                <span className="user-name">
+                  {user.name || user.username || 'User'}
+                  <small className="user-role">({user.role || 'student'})</small>
+                </span>
                 <i className={`fas fa-chevron-down ${isUserMenuOpen ? 'up' : ''}`}></i>
               </button>
 

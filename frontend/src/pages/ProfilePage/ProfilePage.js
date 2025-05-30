@@ -47,16 +47,16 @@ const ProfilePage = ({ user, onLogout }) => {
     const fetchUserProfile = async () => {
         setLoading(true);
         try {
-            // Lấy token từ localStorage
-            const token = localStorage.getItem('token');
+            // Lấy accessToken từ localStorage
+            const accessToken = localStorage.getItem('accessToken');
 
-            if (!token) {
+            if (!accessToken) {
                 throw new Error('Bạn chưa đăng nhập');
             }
 
             const response = await axios.get('/api/student', {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${accessToken}`
                 }
             });
 
@@ -76,7 +76,7 @@ const ProfilePage = ({ user, onLogout }) => {
             console.error('Error fetching profile:', err);
             setError('Không thể tải thông tin hồ sơ. Vui lòng thử lại sau.');
 
-            // Nếu lỗi là do token không hợp lệ thì logout
+            // Nếu lỗi là do accessToken không hợp lệ thì logout
             if (err.response && err.response.status === 401) {
                 if (onLogout) onLogout();
             }
@@ -163,9 +163,9 @@ const ProfilePage = ({ user, onLogout }) => {
         setUpdateSuccess('');
 
         try {
-            const token = localStorage.getItem('token');
+            const accessToken = localStorage.getItem('accessToken');
 
-            if (!token) {
+            if (!accessToken) {
                 throw new Error('Bạn chưa đăng nhập');
             }
 
@@ -186,7 +186,7 @@ const ProfilePage = ({ user, onLogout }) => {
             // Update profile on server
             await axios.put('/api/student/update-info', updateData, {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${accessToken}`
                 }
             });
 

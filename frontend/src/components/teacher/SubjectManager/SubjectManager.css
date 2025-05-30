@@ -1,0 +1,63 @@
+.subject-manager {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.manager-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.manager-header h2 {
+  margin: 0;
+  color: #1a202c;
+  font-weight: 600;
+}
+
+.form-actions {
+  margin-bottom: 0;
+  text-align: right;
+}
+
+.students-section {
+  margin-top: 1rem;
+}
+
+/* Ant Design Table Customization */
+.ant-table-thead > tr > th {
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f7fafc;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+}
+
+.ant-modal-header {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ant-modal-title {
+  color: #1a202c;
+  font-weight: 600;
+} 

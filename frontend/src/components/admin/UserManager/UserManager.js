@@ -11,26 +11,38 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
     username: '',
     fullname: '',
     email: '',
-    password: '',
-    role: ''
+    password: ''
   });
 
   // Filter users based on search term
   const filteredUsers = users?.filter(user =>
-    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   ) || [];
 
   const handleAddUser = async (e) => {
     e.preventDefault();
     try {
-      const response = await addNewTeacher(formData);
+      // Only send the fields that RegisterRequest expects
+      const requestData = {
+        username: formData.username,
+        fullname: formData.fullname,
+        email: formData.email,
+        password: formData.password
+      };
+      
+      const response = await addNewTeacher(requestData);
       console.log('check add teacher', response)
       refreshUsers();
       resetForm();
+      alert('Thêm giáo viên thành công!');
     } catch (err) {
       console.error('Error adding user:', err);
-      alert('Không thể thêm người dùng. Vui lòng thử lại sau.');
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(`Lỗi: ${err.response.data.message}`);
+      } else {
+        alert('Không thể thêm người dùng. Vui lòng thử lại sau.');
+      }
     }
   };
 
@@ -68,18 +80,20 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
   const handleSelectUser = (user) => {
     setSelectedUser(user);
     setFormData({
-      name: user.name || '',
+      username: user.username || '',
+      fullname: user.fullname || '',
       email: user.email || '',
-      role: user.role || 'student'
+      password: ''
     });
     setIsEditing(true);
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
+      username: '',
+      fullname: '',
       email: '',
-      role: 'student'
+      password: ''
     });
     setIsEditing(false);
     setSelectedUser(null);
@@ -89,6 +103,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+  
   const getRoleLabel = (role) => {
     switch (role) {
       case 'ADMIN':
@@ -100,6 +115,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
         return 'Học sinh';
     }
   };
+  
   return (
     <div className="user-manager">
       <div className="user-manager-header">
@@ -134,7 +150,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
               <table>
                 <thead>
                   <tr>
-                    <th>Tên</th>
+                    <th>Họ và tên</th>
                     <th>Email</th>
                     <th>Vai trò</th>
                     <th>Thao tác</th>
@@ -148,9 +164,9 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
                   ) : (
                     filteredUsers.map(user => (
                       <tr key={user._id}>
-                        <td>{user.username}</td>
+                        <td>{user.fullname}</td>
                         <td>{user.email}</td>
-                        <td>{getRoleLabel(user.roles[0].name)}</td>
+                        <td>{getRoleLabel(user.roles?.[0]?.name)}</td>
 
                         <td className="actions">
                           <button onClick={() => handleSelectUser(user)} className="btn-edit">
@@ -170,7 +186,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
         </div>
 
         <div className="user-form-container">
-          <h3>{isEditing ? 'Cập nhật người dùng' : 'Thêm người dùng mới'}</h3>
+          <h3>{isEditing ? 'Cập nhật người dùng' : 'Thêm giáo viên mới'}</h3>
           <form className="user-form">
             <div className="form-group">
               <label>Tên người dùng</label>
@@ -180,6 +196,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
                 value={formData.username}
                 onChange={handleChange}
                 required
+                placeholder="Nhập tên đăng nhập"
               />
             </div>
             <div className="form-group">
@@ -190,6 +207,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
                 value={formData.fullname}
                 onChange={handleChange}
                 required
+                placeholder="Nhập họ và tên đầy đủ"
               />
             </div>
             <div className="form-group">
@@ -200,6 +218,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                placeholder="Nhập địa chỉ email"
               />
             </div>
             <div className="form-group">
@@ -210,17 +229,9 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                placeholder="Nhập mật khẩu (tối thiểu 6 ký tự)"
+                minLength="6"
               />
-            </div>
-            <div className="form-group">
-              <label>Vai trò</label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-              >
-                <option value="teacher">Giáo viên</option>
-              </select>
             </div>
             <div className="form-actions">
               {isEditing ? (
@@ -234,7 +245,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
                 </>
               ) : (
                 <button type="button" onClick={handleAddUser} className="btn-save">
-                  Thêm mới
+                  Thêm giáo viên
                 </button>
               )}
             </div>

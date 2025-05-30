@@ -33,7 +33,19 @@ const AdminDashboard = () => {
     try {
       const responseStudents = await fetchListUsers('student');
       const responseTeachers = await fetchListUsers('teacher');
-      setUsers([...responseStudents.data, ...responseTeachers.data])
+      
+      // Add role information to each user
+      const studentsWithRole = responseStudents.data.map(user => ({
+        ...user,
+        roles: [{ name: 'STUDENT' }]
+      }));
+      
+      const teachersWithRole = responseTeachers.data.map(user => ({
+        ...user,
+        roles: [{ name: 'TEACHER' }]
+      }));
+      
+      setUsers([...studentsWithRole, ...teachersWithRole]);
       setError(null);
     } catch (err) {
       console.error('Error fetching users:', err);
