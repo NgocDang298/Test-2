@@ -1,0 +1,113 @@
+/* Container chính */
+.add-exam-page {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px 30px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Tiêu đề */
+  .add-exam-page h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  
+  /* Nhãn */
+  .add-exam-page label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  /* Input */
+  .add-exam-page input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+    transition: border-color 0.3s ease;
+  }
+  
+  .add-exam-page input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* Nút thêm câu hỏi */
+  .add-exam-page button {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+  
+  .add-exam-page button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+  }
+  
+  /* Nút thêm câu hỏi nhỏ */
+  .add-exam-page button:nth-child(1) {
+    margin-right: 10px;
+  }
+  
+  /* Câu hỏi */
+  .add-exam-page h3 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  .add-exam-page .question-container {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .add-exam-page .question-container label {
+    margin-bottom: 5px;
+    font-weight: normal;
+    color: #666;
+  }
+  
+  /* Nút lưu */
+  .add-exam-page .save-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #120c68;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .add-exam-page .save-button:hover {
+    background-color: #160b79;
+    transform: scale(1.05);
+  }

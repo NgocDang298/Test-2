@@ -42,33 +42,36 @@ const Navbar = ({ user, onLogout }) => {
   return (
     <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
-        <Link to="/" className="logo">
+        <div className="logo" >
           <i className="fas fa-graduation-cap"></i>
           <span>Test4U</span>
-        </Link>
+        </div>
 
         {/* Mobile menu button */}
         <button className="mobile-menu-button" onClick={toggleMobileMenu}>
           <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
         </button>
-
-        {/* Navigation links */}
-        <div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
-          <Link to="/exams" className={location.pathname === '/exams' ? 'active' : ''}>
-            <i className="fas fa-file-alt"></i>
-            <span>Danh sách bài thi</span>
-          </Link>
-          <Link to="/statistics" className={location.pathname === '/statistics' ? 'active' : ''}>
-            <i className="fas fa-chart-bar"></i>
-            <span>Thống kê</span>
-          </Link>
-          {user?.role === 'admin' && (
-            <Link to="/admin" className={location.pathname === '/admin' ? 'active' : ''}>
-              <i className="fas fa-cog"></i>
-              <span>Quản lý</span>
-            </Link>
-          )}
+        <div className="navbar-slogan">
+          <i className="fas fa-lightbulb slogan-icon"></i>
+          Nền tảng thi trắc nghiệm thông minh
         </div>
+        {/* Navigation links */}
+        {/*<div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>*/}
+        {/*  <Link to="/exams" className={location.pathname === '/exams' ? 'active' : ''}>*/}
+        {/*    <i className="fas fa-file-alt"></i>*/}
+        {/*    <span>Danh sách bài thi</span>*/}
+        {/*  </Link>*/}
+        {/*  <Link to="/statistics" className={location.pathname === '/statistics' ? 'active' : ''}>*/}
+        {/*    <i className="fas fa-chart-bar"></i>*/}
+        {/*    <span>Thống kê</span>*/}
+        {/*  </Link>*/}
+        {/*  {user?.role === 'admin' && (*/}
+        {/*    <Link to="/admin" className={location.pathname === '/admin' ? 'active' : ''}>*/}
+        {/*      <i className="fas fa-cog"></i>*/}
+        {/*      <span>Quản lý</span>*/}
+        {/*    </Link>*/}
+        {/*  )}*/}
+        {/*</div>*/}
 
         {/* User menu */}
         <div className="user-menu">

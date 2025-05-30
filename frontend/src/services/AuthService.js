@@ -8,7 +8,7 @@ const handleLogin = async (credentials) => {
 };
 const handleRegister = async (data) => {
     console.log('check data', data)
-    const response = await axios.post('/api/auth/register', data);
+    const response = await axiosInstance.post('/api/auth/register', data);
     return response.data;
 }
 

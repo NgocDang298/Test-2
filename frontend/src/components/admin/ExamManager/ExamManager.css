@@ -1,21 +1,27 @@
-.exam-manager {
+
+
+.exam-management {
+    margin-top: 120px;
     padding: 20px;
 }
 
-.exam-manager-header {
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.exam-manager-title {
+.header h1 {
     font-size: 24px;
     font-weight: 600;
-    color: var(--text-primary);
+
+    margin: 0;
 }
 
-.add-exam-btn {
+.add-exam-btn,
+.header button,
+button.add-exam-btn {
     padding: 10px 20px;
     background: linear-gradient(135deg, #4CAF50, #45a049);
     color: white;
@@ -24,108 +30,27 @@
     cursor: pointer;
     font-weight: 500;
     transition: all 0.3s ease;
+    margin-left: 8px;
 }
 
-.add-exam-btn:hover {
+.add-exam-btn:hover,
+.header button:hover,
+button.add-exam-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #388e3c, #2e7d32);
 }
 
-.exam-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.exam-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.exam-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.exam-title {
-    font-size: 18px;
+.ant-modal-title {
     font-weight: 600;
-    margin-bottom: 10px;
-    color: var(--text-primary);
 }
 
-.exam-info {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.exam-info-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: var(--text-secondary);
-}
-
-.exam-info-item i {
-    color: var(--primary-color);
-}
-
-.exam-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.action-btn {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.edit-btn {
-    background: var(--primary-color);
-    color: white;
-}
-
-.delete-btn {
-    background: #ff4444;
-    color: white;
-}
-
-.action-btn:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-}
-
-.loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 200px;
-    font-size: 18px;
-    color: var(--text-secondary);
-}
-
-@media (max-width: 768px) {
-    .exam-manager {
-        padding: 15px;
-    }
-
-    .exam-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .exam-manager-header {
+@media (max-width: 600px) {
+    .header {
         flex-direction: column;
-        gap: 15px;
         align-items: flex-start;
+        gap: 10px;
+    }
+    .header h1 {
+        font-size: 20px;
     }
 }

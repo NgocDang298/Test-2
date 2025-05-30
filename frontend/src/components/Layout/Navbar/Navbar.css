@@ -11,6 +11,45 @@
   z-index: 1000;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  padding: 0 2rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  gap: 0.5rem;
+}
+
+.navbar-slogan {
+  flex: 1;
+  text-align: center;
+  font-size: 1.25rem;
+  color: #5a67d8;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+.slogan-icon {
+  color: #ffd600;
+  font-size: 1.2em;
+}
+
+@media (max-width: 768px) {
+  .navbar-slogan {
+    display: none;
+  }
+}
 
 .navbar.scrolled {
   background: rgba(255, 255, 255, 0.98);

@@ -1,20 +1,24 @@
-/* styles.css */
 .login-page {
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
+  /* padding: 2rem; */ /* Xóa padding này nếu muốn footer sát đáy */
 }
 
 .login-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 450px;
-  padding: 2.5rem;
+  padding: 3.5rem 2.5rem;
+  margin: 40px auto;
 }
 
 .login-header {
@@ -56,6 +60,16 @@
   display: flex;
   align-items: center;
 }
+.input-group .input-icon-right {
+  position: absolute;
+  right: 1.2rem;
+  color: #a0aec0;
+  font-size: 1.3rem;
+  pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
 
 .input-group i {
   position: absolute;
