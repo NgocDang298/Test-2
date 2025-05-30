@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import axiosInstance from '../../services/axiosInstance';
 import useAuth from '../../hooks/useAuth';
 import './TeacherExamPage.css';
@@ -79,9 +80,10 @@ const TeacherExamPage = () => {
             setShowCreateModal(false);
             resetForm();
             fetchExamsBySubject(selectedSubject);
+            toast.success('Tạo bài thi thành công!');
         } catch (error) {
             console.error('Error creating exam:', error);
-            alert('Có lỗi xảy ra khi tạo bài thi');
+            toast.error('Có lỗi xảy ra khi tạo bài thi');
         }
     };
 
@@ -93,9 +95,10 @@ const TeacherExamPage = () => {
             setEditingExam(null);
             resetForm();
             fetchExamsBySubject(selectedSubject);
+            toast.success('Cập nhật bài thi thành công!');
         } catch (error) {
             console.error('Error updating exam:', error);
-            alert('Có lỗi xảy ra khi cập nhật bài thi');
+            toast.error('Có lỗi xảy ra khi cập nhật bài thi');
         }
     };
 
@@ -104,9 +107,10 @@ const TeacherExamPage = () => {
             try {
                 await axiosInstance.delete(`/api/teacher/exams/${examId}`);
                 fetchExamsBySubject(selectedSubject);
+                toast.success('Xóa bài thi thành công!');
             } catch (error) {
                 console.error('Error deleting exam:', error);
-                alert('Có lỗi xảy ra khi xóa bài thi');
+                toast.error('Có lỗi xảy ra khi xóa bài thi');
             }
         }
     };

@@ -268,7 +268,7 @@ const AdminDashboard = () => {
         <div className="header-left">
           <h1>Dashboard</h1>
         </div>
-        <div className="header-right">
+        {/* <div className="header-right">
           <div className="notification-icon">
             <i className="fas fa-bell"></i>
             {notifications > 0 && (
@@ -282,7 +282,7 @@ const AdminDashboard = () => {
               <span className="user-role">Quản trị viên</span>
             </div>
           </div>
-        </div>
+        </div> */}
       </header>
 
       {/* Main Content */}

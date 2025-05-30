@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Layout/Navbar/Navbar';
 import Footer from './components/Layout/Footer/Footer';
 import AppRoutes from './routes/Index';
@@ -44,6 +46,18 @@ function App() {
           <AppRoutes user={user} isAuthenticated={isAuthenticated} onLogout={handleLogout} />
         </main>
         <Footer />
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </div>
     </Router>
   );

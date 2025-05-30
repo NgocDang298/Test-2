@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import './SubjectManager.css';
 import { 
   getPendingSubjects, 
@@ -88,9 +89,9 @@ const SubjectManager = ({ refreshStats }) => {
       await approveSubject(subjectId);
       await fetchPendingSubjects();
       if (refreshStats) refreshStats();
-      alert('Môn học đã được duyệt thành công!');
+      toast.success('Môn học đã được duyệt thành công!');
     } catch (err) {
-      alert('Có lỗi xảy ra khi duyệt môn học.');
+      toast.error('Có lỗi xảy ra khi duyệt môn học.');
     }
   };
 
@@ -99,9 +100,9 @@ const SubjectManager = ({ refreshStats }) => {
       await rejectSubject(subjectId);
       await fetchPendingSubjects();
       if (refreshStats) refreshStats();
-      alert('Môn học đã bị từ chối.');
+      toast.success('Môn học đã bị từ chối.');
     } catch (err) {
-      alert('Có lỗi xảy ra khi từ chối môn học.');
+      toast.error('Có lỗi xảy ra khi từ chối môn học.');
     }
   };
 
@@ -112,9 +113,9 @@ const SubjectManager = ({ refreshStats }) => {
       setShowCreateModal(false);
       setFormData({ name: '', description: '' });
       await fetchData();
-      alert('Tạo môn học thành công!');
+      toast.success('Tạo môn học thành công!');
     } catch (err) {
-      alert('Có lỗi xảy ra khi tạo môn học.');
+      toast.error('Có lỗi xảy ra khi tạo môn học.');
     }
   };
 
@@ -126,9 +127,9 @@ const SubjectManager = ({ refreshStats }) => {
       setFormData({ name: '', description: '' });
       setSelectedSubject(null);
       await fetchData();
-      alert('Cập nhật môn học thành công!');
+      toast.success('Cập nhật môn học thành công!');
     } catch (err) {
-      alert('Có lỗi xảy ra khi cập nhật môn học.');
+      toast.error('Có lỗi xảy ra khi cập nhật môn học.');
     }
   };
 
@@ -137,9 +138,9 @@ const SubjectManager = ({ refreshStats }) => {
       try {
         await deleteSubject(subjectId);
         await fetchData();
-        alert('Xóa môn học thành công!');
+        toast.success('Xóa môn học thành công!');
       } catch (err) {
-        alert('Có lỗi xảy ra khi xóa môn học.');
+        toast.error('Có lỗi xảy ra khi xóa môn học.');
       }
     }
   };
@@ -151,7 +152,7 @@ const SubjectManager = ({ refreshStats }) => {
       setSubjectTeachers(response);
       setShowTeacherModal(true);
     } catch (err) {
-      alert('Không thể tải danh sách giáo viên.');
+      toast.error('Không thể tải danh sách giáo viên.');
     }
   };
 
@@ -160,9 +161,9 @@ const SubjectManager = ({ refreshStats }) => {
       await assignTeacherToSubject(selectedSubject.id, teacherId);
       const response = await getTeachersForSubject(selectedSubject.id);
       setSubjectTeachers(response);
-      alert('Gán giáo viên thành công!');
+      toast.success('Gán giáo viên thành công!');
     } catch (err) {
-      alert('Có lỗi xảy ra khi gán giáo viên.');
+      toast.error('Có lỗi xảy ra khi gán giáo viên.');
     }
   };
 
@@ -171,9 +172,9 @@ const SubjectManager = ({ refreshStats }) => {
       await removeTeacherFromSubject(selectedSubject.id, teacherId);
       const response = await getTeachersForSubject(selectedSubject.id);
       setSubjectTeachers(response);
-      alert('Gỡ giáo viên thành công!');
+      toast.success('Gỡ giáo viên thành công!');
     } catch (err) {
-      alert('Có lỗi xảy ra khi gỡ giáo viên.');
+      toast.error('Có lỗi xảy ra khi gỡ giáo viên.');
     }
   };
 
@@ -184,7 +185,7 @@ const SubjectManager = ({ refreshStats }) => {
       setSubjectStudents(response);
       setShowStudentModal(true);
     } catch (err) {
-      alert('Không thể tải danh sách học sinh.');
+      toast.error('Không thể tải danh sách học sinh.');
     }
   };
 
@@ -193,9 +194,9 @@ const SubjectManager = ({ refreshStats }) => {
       await addStudentToSubjectByAdmin(selectedSubject.id, studentId);
       const response = await getStudentsInSubjectByAdmin(selectedSubject.id);
       setSubjectStudents(response);
-      alert('Thêm học sinh thành công!');
+      toast.success('Thêm học sinh thành công!');
     } catch (err) {
-      alert('Có lỗi xảy ra khi thêm học sinh.');
+      toast.error('Có lỗi xảy ra khi thêm học sinh.');
     }
   };
 
@@ -204,9 +205,9 @@ const SubjectManager = ({ refreshStats }) => {
       await removeStudentFromSubject(selectedSubject.id, studentId);
       const response = await getStudentsInSubjectByAdmin(selectedSubject.id);
       setSubjectStudents(response);
-      alert('Gỡ học sinh thành công!');
+      toast.success('Gỡ học sinh thành công!');
     } catch (err) {
-      alert('Có lỗi xảy ra khi gỡ học sinh.');
+      toast.error('Có lỗi xảy ra khi gỡ học sinh.');
     }
   };
 

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import './UserManager.css';
 import { 
   addNewTeacher, 
@@ -63,7 +64,7 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
       setSearchResults(response.data || []);
     } catch (err) {
       console.error('Error searching users:', err);
-      alert('Không thể tìm kiếm người dùng. Vui lòng thử lại.');
+      toast.error('Không thể tìm kiếm người dùng. Vui lòng thử lại.');
     } finally {
       setIsSearching(false);
     }
@@ -91,11 +92,11 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
       if (addingUserType === 'teacher') {
         response = await addNewTeacher(requestData);
         console.log('Teacher added successfully:', response);
-        alert('Thêm giáo viên thành công!');
+        toast.success('Thêm giáo viên thành công!');
       } else if (addingUserType === 'student') {
         response = await addNewStudent(requestData);
         console.log('Student added successfully:', response);
-        alert('Thêm học sinh thành công!');
+        toast.success('Thêm học sinh thành công!');
       }
       
       refreshUsers();
@@ -103,9 +104,9 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
     } catch (err) {
       console.error(`Error adding ${addingUserType}:`, err);
       if (err.response && err.response.data && err.response.data.message) {
-        alert(`Lỗi: ${err.response.data.message}`);
+        toast.error(`Lỗi: ${err.response.data.message}`);
       } else {
-        alert(`Không thể thêm ${addingUserType === 'teacher' ? 'giáo viên' : 'học sinh'}. Vui lòng thử lại sau.`);
+        toast.error(`Không thể thêm ${addingUserType === 'teacher' ? 'giáo viên' : 'học sinh'}. Vui lòng thử lại sau.`);
       }
     }
   };
@@ -132,10 +133,10 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
       setIsEditing(false);
       setSelectedUser(null);
       resetForm();
-      alert('Cập nhật thông tin người dùng thành công!');
+      toast.success('Cập nhật thông tin người dùng thành công!');
     } catch (err) {
       console.error('Error updating user:', err);
-      alert('Không thể cập nhật người dùng. Vui lòng thử lại sau.');
+      toast.error('Không thể cập nhật người dùng. Vui lòng thử lại sau.');
     }
   };
 
@@ -156,10 +157,10 @@ const UserManager = ({ users, loading, error, refreshUsers }) => {
         setSelectedUser(null);
         resetForm();
       }
-      alert('Xóa người dùng thành công!');
+      toast.success('Xóa người dùng thành công!');
     } catch (err) {
       console.error('Error deleting user:', err);
-      alert('Không thể xóa người dùng. Vui lòng thử lại sau.');
+      toast.error('Không thể xóa người dùng. Vui lòng thử lại sau.');
     }
   };
 
