@@ -185,6 +185,26 @@ public class UserService {
 
         userRepository.save(newTeacher);
     }
+
+    public void registerStudent(RegisterRequest request) {
+        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Tên đăng nhập đã tồn tại.");
+        }
+
+        User newStudent = new User();
+        newStudent.setUsername(request.getUsername());
+        newStudent.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        newStudent.setFullname(request.getFullname());
+        newStudent.setEmail(request.getEmail());
+        Role studentRole = roleRepository.findByName("STUDENT")
+                .orElseThrow(() -> new EntityNotFoundException("Không tìm thấy vai trò STUDENT."));
+        Set<Role> roles = new HashSet<>();
+        roles.add(studentRole);
+        newStudent.setRoles(roles);
+
+        userRepository.save(newStudent);
+    }
+
     public UserDTO getUserProfile(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với username: " + username));

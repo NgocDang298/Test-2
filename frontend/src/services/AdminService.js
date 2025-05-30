@@ -12,6 +12,12 @@ const addNewTeacher = async (data) => {
     return response;
 }
 
+const addNewStudent = async (data) => {
+    console.log('check add student', data)
+    const response = await axiosInstance.post('/api/admin/students/register', data);
+    return response;
+}
+
 // Test endpoints for debugging
 const testAdminController = async () => {
     console.log('Testing admin controller...')
@@ -63,6 +69,7 @@ const searchUsers = async (params) => {
 export {
     fetchListUsers,
     addNewTeacher,
+    addNewStudent,
     testAdminController,
     addNewTeacherSimple,
     addNewTeacherNoValidation,

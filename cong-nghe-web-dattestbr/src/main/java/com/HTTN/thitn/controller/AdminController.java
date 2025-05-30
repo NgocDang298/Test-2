@@ -114,6 +114,33 @@ public class AdminController {
         }
     }
 
+    @PostMapping("/students/register")
+    public ResponseEntity<ApiResponse<String>> registerStudentByAdmin(
+            @RequestBody @Valid RegisterRequest request) {
+
+        logger.info("Admin attempting to register new student with username: {}", request.getUsername());
+
+        try {
+            userService.registerStudent(request);
+            String successMessage = String.format("Đã đăng ký thành công tài khoản cho sinh viên: %s", request.getUsername());
+            logger.info("Student registration successful for username: {}", request.getUsername());
+
+            ApiResponse<String> response = new ApiResponse<>(true, successMessage, null);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+        } catch (IllegalArgumentException e) {
+            logger.warn("Student registration failed for username: {}. Reason: {}", request.getUsername(), e.getMessage());
+
+            ApiResponse<String> response = new ApiResponse<>(false, e.getMessage(), null);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            logger.error("Unexpected error during student registration for username: {}", request.getUsername(), e);
+
+            ApiResponse<String> response = new ApiResponse<>(false, "Lỗi không xác định trong quá trình đăng ký.", null);
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/users/search")
     public ResponseEntity<ApiResponse<List<UserDTO>>> searchUsers(
             @RequestParam(value = "fullname", required = false) String fullname,
