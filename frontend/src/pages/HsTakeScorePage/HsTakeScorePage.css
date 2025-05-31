@@ -1,0 +1,43 @@
+.score-page-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.score-card {
+    box-shadow: 0 4px 24px #b5c6e0;
+    border-radius: 18px;
+    padding: 32px 0;
+    transition: box-shadow 0.3s;
+    background: #fff;
+    max-width: 650px;
+
+}
+.score-card:hover {
+    box-shadow: 0 8px 32px #a0b8d9;
+}
+
+.score-page-container .ant-result {
+    margin-bottom: 16px;
+    background: transparent;
+}
+
+.score-desc {
+    margin-top: 8px;
+    background: #f6ffed;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.score-page-container .ant-btn {
+    font-size: 18px;
+    height: 48px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+.score-page-container .ant-btn-primary:hover {
+    background: #389e0d !important;
+    border-color: #389e0d !important;
+}

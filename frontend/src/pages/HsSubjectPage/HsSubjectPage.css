@@ -1,0 +1,112 @@
+.subject-list {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(300px, 1fr)); /* 5 cột, card to hơn */
+    gap: 36px 32px; /* Tăng khoảng cách giữa các card */
+    width: 100%;
+    max-width: 95%;
+    margin: 0 auto;
+    padding: 0 32px 32px 32px;
+    transition: filter 0.2s;
+    box-sizing: border-box;
+    justify-items: start;
+    /*align-items: start;*/
+}
+
+.subject-card {
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 6px 32px rgba(52, 99, 255, 0.10), 0 1.5px 8px rgba(0,0,0,0.06);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.18s, box-shadow 0.18s;
+    cursor: pointer;
+    border: 1.5px solid #e0e7ef;
+    max-width: 320px;
+    width: 100%;
+
+    max-height: 320px;
+    margin: 0;
+}
+
+.subject-card:hover {
+    transform: translateY(-10px) scale(1.04);
+    box-shadow: 0 12px 40px rgba(52, 99, 255, 0.18), 0 2px 12px rgba(0,0,0,0.10);
+    border-color: #2563eb;
+}
+
+.subject-card-img img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    background: #f1f5f9;
+    border-bottom: 1.5px solid #e5e7eb;
+    pointer-events: none;
+}
+
+.subject-card-content {
+    padding: 22px 24px 18px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.subject-card-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #2563eb;
+    letter-spacing: 0.5px;
+}
+
+.subject-card-desc {
+    color: #475569;
+    font-size: 1.08rem;
+    margin-bottom: 10px;
+    min-height: 36px;
+}
+
+.subject-card-meta {
+    font-size: 1rem;
+    color: #64748b;
+}
+
+@media (max-width: 1200px) {
+    .subject-list {
+        grid-template-columns: repeat(3, minmax(220px, 1fr));
+        gap: 28px 16px;
+    }
+}
+@media (max-width: 900px) {
+    .subject-list {
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        gap: 20px 10px;
+        padding: 0 8px;
+        max-width: 100%;
+    }
+    .subject-card-img img {
+        height: 120px;
+    }
+    .subject-card {
+        max-width: 100%;
+        min-width: 0;
+    }
+}
+@media (max-width: 600px) {
+    .main-content {
+        margin-top: 40px;
+        padding-bottom: 12px;
+    }
+    .subject-title {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+    .subject-list {
+        grid-template-columns: 1fr;
+        gap: 14px 0;
+        padding: 0 2px;
+    }
+    .subject-card-content {
+        padding: 10px 8px 8px 8px;
+    }
+}

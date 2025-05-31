@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import Navbar from './components/Layout/Navbar/Navbar';
 import Footer from './components/Layout/Footer/Footer';
 import AppRoutes from './routes/Index';
-import 'antd/dist/reset.css';
+import 'antd/dist/reset.css'; 
 
 function AppContent({ user, onLogin, onLogout }) {
   const location = useLocation();

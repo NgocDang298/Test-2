@@ -1,0 +1,98 @@
+.hs-ready-container {
+    max-width: 420px;
+    margin: 8% auto 0 auto;
+    padding: 32px 28px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    text-align: center;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.hs-ready-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2d5be3;
+    margin-bottom: 18px;
+}
+
+.hs-ready-info {
+    margin: 0 auto 18px auto;
+    text-align: left;
+}
+
+.hs-ready-info p {
+    font-size: 1.1rem;
+    margin: 10px 0;
+}
+
+.hs-ready-info b {
+    color: #333;
+}
+
+.hs-ready-btn {
+    margin-top: 24px;
+    padding: 12px 32px;
+    background: linear-gradient(90deg, #2d5be3 60%, #4fa3f7 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.hs-ready-btn:hover {
+    background: linear-gradient(90deg, #1a3e8a 60%, #2d5be3 100%);
+}
+
+/* Bảng thành tích */
+.hs-history-table-wrap {
+    max-width: 700px;
+    margin: 40px auto 0 auto;
+    text-align: center; /* căn giữa bảng */
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08); /* nhẹ hơn */
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.hs-history-title {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: #2d5be3;
+    text-align: center;
+}
+
+/* Tùy chỉnh bảng antd */
+.ant-table-wrapper {
+    width: 100%;
+    /*max-width: 600px;*/
+}
+
+.ant-table {
+    border-radius: 10px !important;
+    overflow: hidden;
+    background: #f9fbff;
+}
+
+.ant-table-thead > tr > th {
+    background: #f2f6fc !important;
+    color: #2d5be3 !important;
+    font-weight: 600;
+    text-align: center !important;
+}
+
+.ant-table-tbody > tr > td {
+    text-align: center !important;
+    font-size: 1rem;
+}
+
+.ant-pagination {
+    justify-content: center !important;
+    margin-top: 16px !important;
+}

@@ -12,7 +12,9 @@ import HsSubjectPage from "../pages/HsSubjectPage/HsSubjectPage";
 import HsExamPage from "../pages/HsExamPage/HsExamPage";
 import HsTakeExamPage from "../pages/HsTakeExamPage/HsTakeExamPage";
 import HsTakeScorePage from "../pages/HsTakeScorePage/HsTakeScorePage";
+import HsReadyPage from "../pages/HsReadyPage/HsReadyPage";
 const ExamRoutes = ({ user, onLogout }) => ([
+
     <Route path="/teacher" element={
         <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
             <ExamPage user={user} />
@@ -68,9 +70,12 @@ const ExamRoutes = ({ user, onLogout }) => ([
             <HsTakeScorePage />
         </ProtectedRoute>
     } key="student-take-score" />,
+    <Route path="/student/question/exam/:examId/ready" element={
+        <ProtectedRoute allowedRoles={['student']}>
+            <HsReadyPage />
+        </ProtectedRoute>
+    } key="student-ready" />,
 
-
-    
 ]);
 
 export default ExamRoutes;
