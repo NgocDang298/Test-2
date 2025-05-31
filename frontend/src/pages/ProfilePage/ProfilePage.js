@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './ProfilePage.css';
 import { useUser } from '../../contexts/UserContext';
-import { updateUserProfile, changePassword, getUserStats } from '../../services/UserService';
+import { updateStudentProfile, updateTeacherProfile, changePassword, getUserStats } from '../../services/UserService';
 
 const ProfilePage = () => {
-    const { userProfile, fetchUserProfile, updateUserProfile: updateContextProfile, loading, error } = useUser();
-    // const [isEditing, setIsEditing] = useState(false); // Disabled editing
+    const { user, userProfile, fetchUserProfile, loading, error } = useUser();
+    const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         fullname: '',
-        phone: '',
-        birthday: '',
-        address: '',
+        email: '',
         currentPassword: '',
         newPassword: '',
         confirmPassword: ''
@@ -25,14 +23,18 @@ const ProfilePage = () => {
         recentExams: []
     });
 
+    // Combine user from JWT and userProfile from API
+    const combinedUserData = {
+        ...user, // JWT data (has roles, username)
+        ...userProfile // API data (has id, fullname, email)
+    };
+
     // Initialize form data when userProfile changes
     useEffect(() => {
         if (userProfile) {
             setFormData({
                 fullname: userProfile.fullname || '',
-                phone: userProfile.phone || '',
-                birthday: userProfile.birthday ? userProfile.birthday.substring(0, 10) : '',
-                address: userProfile.address || '',
+                email: userProfile.email || '',
                 currentPassword: '',
                 newPassword: '',
                 confirmPassword: ''
@@ -69,22 +71,21 @@ const ProfilePage = () => {
         setUpdateSuccess('');
     };
 
-    // Disabled edit mode functionality
-    // const toggleEditMode = () => {
-    //     setIsEditing(!isEditing);
+    const toggleEditMode = () => {
+        setIsEditing(!isEditing);
 
-    //     // Reset password fields and error when toggling edit mode
-    //     if (!isEditing) {
-    //         setFormData(prev => ({
-    //             ...prev,
-    //             currentPassword: '',
-    //             newPassword: '',
-    //             confirmPassword: ''
-    //         }));
-    //         setPasswordError('');
-    //         setUpdateSuccess('');
-    //     }
-    // };
+        // Reset password fields and error when toggling edit mode
+        if (!isEditing) {
+            setFormData(prev => ({
+                ...prev,
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: ''
+            }));
+            setPasswordError('');
+            setUpdateSuccess('');
+        }
+    };
 
     const validatePasswordChange = () => {
         // Check if user wants to change password
@@ -135,15 +136,18 @@ const ProfilePage = () => {
         setUpdateSuccess('');
 
         try {
-            // Update profile information
+            // Update profile information based on user role
             const profileUpdateData = {
                 fullname: formData.fullname,
-                phone: formData.phone,
-                birthday: formData.birthday || null,
-                address: formData.address
+                email: formData.email
             };
 
-            await updateUserProfile(profileUpdateData);
+            // Use role-specific update endpoints based on JWT roles
+            if (combinedUserData.roles && combinedUserData.roles.includes('STUDENT')) {
+                await updateStudentProfile(profileUpdateData);
+            } else if (combinedUserData.roles && combinedUserData.roles.includes('TEACHER')) {
+                await updateTeacherProfile(profileUpdateData);
+            }
 
             // Change password if provided
             if (formData.currentPassword && formData.newPassword) {
@@ -158,7 +162,7 @@ const ProfilePage = () => {
             await fetchUserProfile();
 
             setUpdateSuccess('Cập nhật thông tin thành công!');
-            // setIsEditing(false); // Disabled
+            setIsEditing(false);
 
             // Reset password fields
             setFormData(prev => ({
@@ -212,34 +216,62 @@ const ProfilePage = () => {
     }
 
     const getUserRole = () => {
-        if (!userProfile?.roles) return 'Người dùng';
+        console.log('getUserRole - combinedUserData:', combinedUserData); // Debug log
         
-        if (userProfile.roles.includes('ADMIN')) return 'Quản trị viên';
-        if (userProfile.roles.includes('TEACHER')) return 'Giáo viên';
-        if (userProfile.roles.includes('STUDENT')) return 'Học sinh';
+        // Use roles from JWT token (user)
+        if (!combinedUserData?.roles || combinedUserData.roles.length === 0) {
+            console.log('No roles found in combined data'); // Debug log
+            return 'Người dùng';
+        }
+        
+        console.log('User roles from JWT:', combinedUserData.roles); // Debug log
+        
+        if (combinedUserData.roles.includes('ADMIN')) return 'Quản trị viên';
+        if (combinedUserData.roles.includes('TEACHER')) return 'Giáo viên';
+        if (combinedUserData.roles.includes('STUDENT')) return 'Học sinh';
         return 'Người dùng';
     };
+
+    // Check if user can edit (not ADMIN) - use JWT roles
+    const canEdit = () => {
+        if (!combinedUserData?.roles || combinedUserData.roles.length === 0) {
+            console.log('canEdit: No roles in combined data'); // Debug log
+            return false;
+        }
+        
+        const hasRoles = combinedUserData.roles.length > 0;
+        const isNotAdmin = !combinedUserData.roles.includes('ADMIN');
+        const result = hasRoles && isNotAdmin;
+        
+        console.log('canEdit - roles:', combinedUserData.roles, 'result:', result); // Debug log
+        return result;
+    };
+    
+    console.log('ProfilePage - user (JWT):', user); // Debug log
+    console.log('ProfilePage - userProfile (API):', userProfile); // Debug log
+    console.log('ProfilePage - combinedUserData:', combinedUserData); // Debug log
 
     return (
         <div className="profile-page">
             <div className="profile-container">
                 <div className="profile-header">
                     <h1>Thông tin cá nhân</h1>
-                    {/* Edit button disabled */}
-                    {/* <button
-                        className={`btn-edit-profile ${isEditing ? 'btn-cancel' : ''}`}
-                        onClick={toggleEditMode}
-                    >
-                        {isEditing ? (
-                            <>
-                                <i className="fas fa-times"></i> Hủy
-                            </>
-                        ) : (
-                            <>
-                                <i className="fas fa-edit"></i> Chỉnh sửa
-                            </>
-                        )}
-                    </button> */}
+                    {canEdit() && (
+                        <button
+                            className={`btn-edit-profile ${isEditing ? 'btn-cancel' : ''}`}
+                            onClick={toggleEditMode}
+                        >
+                            {isEditing ? (
+                                <>
+                                    <i className="fas fa-times"></i> Hủy
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fas fa-edit"></i> Chỉnh sửa
+                                </>
+                            )}
+                        </button>
+                    )}
                 </div>
 
                 {updateSuccess && (
@@ -257,9 +289,9 @@ const ProfilePage = () => {
                 <div className="profile-content">
                     <div className="profile-avatar">
                         <div className="avatar-circle">
-                            {userProfile?.fullname ? userProfile.fullname.charAt(0).toUpperCase() : 'U'}
+                            {combinedUserData?.fullname ? combinedUserData.fullname.charAt(0).toUpperCase() : 'U'}
                         </div>
-                        <h2 className="user-name">{userProfile?.fullname}</h2>
+                        <h2 className="user-name">{combinedUserData?.fullname}</h2>
                         <p className="user-role">{getUserRole()}</p>
                     </div>
 
@@ -267,44 +299,45 @@ const ProfilePage = () => {
                         <form onSubmit={handleSubmit}>
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label>Họ và tên</label>
-                                    {/* Always show as read-only */}
-                                    <p className="profile-info">{userProfile?.fullname || '(Chưa cập nhật)'}</p>
+                                    <label>Tên đăng nhập</label>
+                                    <p className="profile-info">{combinedUserData?.sub || combinedUserData?.username}</p>
+                                    <small className="info-note">Tên đăng nhập không thể thay đổi</small>
                                 </div>
 
                                 <div className="form-group">
-                                    <label>Email</label>
-                                    <p className="profile-info">{userProfile?.email}</p>
-                                    <small className="info-note">Email không thể thay đổi</small>
+                                    <label>Họ và tên</label>
+                                    {isEditing && canEdit() ? (
+                                        <input
+                                            type="text"
+                                            name="fullname"
+                                            value={formData.fullname}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    ) : (
+                                        <p className="profile-info">{combinedUserData?.fullname || '(Chưa cập nhật)'}</p>
+                                    )}
                                 </div>
                             </div>
 
                             <div className="form-row">
                                 <div className="form-group">
-                                    <label>Số điện thoại</label>
-                                    {/* Always show as read-only */}
-                                    <p className="profile-info">{userProfile?.phone || '(Chưa cập nhật)'}</p>
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Ngày sinh</label>
-                                    {/* Always show as read-only */}
-                                    <p className="profile-info">
-                                        {userProfile?.birthday
-                                            ? new Date(userProfile.birthday).toLocaleDateString('vi-VN')
-                                            : '(Chưa cập nhật)'}
-                                    </p>
+                                    <label>Email</label>
+                                    {isEditing && canEdit() ? (
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            required
+                                        />
+                                    ) : (
+                                        <p className="profile-info">{combinedUserData?.email}</p>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="form-group full-width">
-                                <label>Địa chỉ</label>
-                                {/* Always show as read-only */}
-                                <p className="profile-info">{userProfile?.address || '(Chưa cập nhật)'}</p>
-                            </div>
-
-                            {/* Password section disabled */}
-                            {/* {isEditing && (
+                            {isEditing && canEdit() && (
                                 <div className="password-section">
                                     <h3>Đổi mật khẩu</h3>
                                     <p className="password-note">Để trống nếu bạn không muốn thay đổi mật khẩu</p>
@@ -350,16 +383,15 @@ const ProfilePage = () => {
                                         </div>
                                     </div>
                                 </div>
-                            )} */}
+                            )}
 
-                            {/* Save button disabled */}
-                            {/* {isEditing && (
+                            {isEditing && canEdit() && (
                                 <div className="form-actions">
                                     <button type="submit" className="btn-save" disabled={updateLoading}>
                                         {updateLoading ? 'Đang lưu...' : 'Lưu thay đổi'}
                                     </button>
                                 </div>
-                            )} */}
+                            )}
                         </form>
                     </div>
                 </div>

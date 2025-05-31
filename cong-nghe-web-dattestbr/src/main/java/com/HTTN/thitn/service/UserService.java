@@ -32,27 +32,45 @@ public class UserService {
     private final RoleRepository roleRepository;
 
     public void updateStudentInfo(String username, StudentUpdateRequest request) {
-        User student = userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy sinh viên với username: " + username));
-        if (request.getFullname() != null) {
-            student.setFullname(request.getFullname());
+        
+        // Verify user has STUDENT role
+        boolean isStudent = user.getRoles().stream()
+                .anyMatch(role -> "STUDENT".equals(role.getName()));
+        if (!isStudent) {
+            throw new RuntimeException("Người dùng không có quyền sinh viên");
         }
-        if (request.getEmail() != null) {
-            student.setEmail(request.getEmail());
+        
+        if (request.getFullname() != null && !request.getFullname().trim().isEmpty()) {
+            user.setFullname(request.getFullname());
         }
-        userRepository.save(student);
+        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
+            user.setEmail(request.getEmail());
+        }
+        
+        userRepository.save(user);
     }
 
     public void updateTeacherInfo(String username, TeacherUpdateRequest request) {
-        User teacher = userRepository.findByUsername(username)
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy giáo viên với username: " + username));
-        if (request.getFullname() != null) {
-            teacher.setFullname(request.getFullname());
+        
+        // Verify user has TEACHER role
+        boolean isTeacher = user.getRoles().stream()
+                .anyMatch(role -> "TEACHER".equals(role.getName()));
+        if (!isTeacher) {
+            throw new RuntimeException("Người dùng không có quyền giáo viên");
         }
-        if (request.getEmail() != null) {
-            teacher.setEmail(request.getEmail());
+        
+        if (request.getFullname() != null && !request.getFullname().trim().isEmpty()) {
+            user.setFullname(request.getFullname());
         }
-        userRepository.save(teacher);
+        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
+            user.setEmail(request.getEmail());
+        }
+        
+        userRepository.save(user);
     }
 
     public void updateStudentById(Long studentId, StudentUpdateRequest request) {
@@ -128,9 +146,6 @@ public class UserService {
         dto.setUsername(user.getUsername());
         dto.setFullname(user.getFullname());
         dto.setEmail(user.getEmail());
-        dto.setPhone(user.getPhone());
-        dto.setBirthday(user.getBirthday());
-        dto.setAddress(user.getAddress());
         
         // Convert roles to Set<String>
         Set<String> roleNames = user.getRoles().stream()
@@ -148,14 +163,8 @@ public class UserService {
         if (request.getFullname() != null && !request.getFullname().trim().isEmpty()) {
             user.setFullname(request.getFullname());
         }
-        if (request.getPhone() != null) {
-            user.setPhone(request.getPhone());
-        }
-        if (request.getBirthday() != null) {
-            user.setBirthday(request.getBirthday());
-        }
-        if (request.getAddress() != null) {
-            user.setAddress(request.getAddress());
+        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
+            user.setEmail(request.getEmail());
         }
         
         userRepository.save(user);
@@ -220,7 +229,14 @@ public class UserService {
     public UserDTO getUserProfile(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với username: " + username));
-        return convertToUserDTO(user);
+        
+        System.out.println("getUserProfile - User: " + user.getUsername());
+        System.out.println("getUserProfile - User roles: " + user.getRoles());
+        
+        UserDTO dto = convertToUserDTO(user);
+        System.out.println("getUserProfile - DTO roles: " + dto.getRoles());
+        
+        return dto;
     }
 }
 

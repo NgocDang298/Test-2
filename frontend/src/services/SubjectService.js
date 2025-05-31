@@ -98,7 +98,7 @@ export const getStudentsInSubjectByAdmin = async (subjectId) => {
 };
 
 export const getAllSubjects = async () => {
-    const response = await axiosInstance.get('/api/admin/subjects');
+    const response = await axiosInstance.get('/api/admin/subjects/all');
     return response.data;
 };
 

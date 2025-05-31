@@ -29,6 +29,7 @@ const HomePage = () => {
   }, [navigate]);
 
   const getUserRole = () => {
+    console.log('getUserRole - user:', user); // Debug log
     if (!user || !user.roles) return null;
     return user.roles[0];
   };

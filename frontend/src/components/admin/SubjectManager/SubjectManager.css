@@ -442,12 +442,15 @@
 .subject-detail-info {
     max-height: 70vh;
     overflow-y: auto;
+    padding: 0;
 }
 
 .detail-section {
     margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e9ecef;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
 }
 
 .detail-section:last-child {
@@ -475,43 +478,53 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+    padding: 12px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
 }
 
 .detail-item label {
     font-weight: 600;
     color: #6c757d;
-    font-size: 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .detail-item span {
     color: #495057;
     font-size: 14px;
+    font-weight: 500;
 }
 
 .stats-row {
     display: flex;
-    gap: 30px;
-    justify-content: flex-start;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .stat-item {
     text-align: center;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    min-width: 100px;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 12px;
+    min-width: 120px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);
 }
 
 .stat-number {
-    font-size: 24px;
+    font-size: 28px;
     font-weight: 700;
-    color: #667eea;
+    color: white;
     margin-bottom: 5px;
 }
 
 .stat-label {
     font-size: 12px;
-    color: #6c757d;
+    color: rgba(255, 255, 255, 0.9);
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -519,26 +532,35 @@
 .user-list.compact {
     max-height: 200px;
     overflow-y: auto;
+    background: white;
+    border-radius: 8px;
 }
 
 .user-item.compact {
-    padding: 10px;
-    margin-bottom: 8px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    border: 1px solid #e9ecef;
+    padding: 12px;
+    margin-bottom: 0;
+    background: white;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.user-item.compact:last-child {
+    border-bottom: none;
 }
 
 .user-item.compact:hover {
-    background: #e9ecef;
+    background: #f8f9fa;
 }
 
 .empty-message {
     color: #6c757d;
     font-style: italic;
     text-align: center;
-    padding: 20px;
+    padding: 30px 20px;
     margin: 0;
+    background: white;
+    border-radius: 8px;
 }
 
 .more-info {
@@ -547,6 +569,65 @@
     text-align: center;
     margin: 10px 0 0;
     font-weight: 500;
+    padding: 10px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 6px;
+}
+
+/* Loading States */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-radius: 8px;
+}
+
+.loading-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #667eea;
+    font-weight: 500;
+}
+
+.loading-spinner-small {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e2e8f0;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.btn.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.modal-section {
+    position: relative;
 }
 
 .status-badge.unknown {

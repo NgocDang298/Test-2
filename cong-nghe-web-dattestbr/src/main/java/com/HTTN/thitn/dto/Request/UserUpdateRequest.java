@@ -1,12 +1,15 @@
 package com.HTTN.thitn.dto.Request;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import java.time.LocalDate;
 
 @Data
 public class UserUpdateRequest {
+    @NotBlank(message = "Họ và tên không được để trống")
     private String fullname;
-    private String phone;
-    private LocalDate birthday;
-    private String address;
+    
+    @Email(message = "Email không hợp lệ")
+    @NotBlank(message = "Email không được để trống")
+    private String email;
 } 
