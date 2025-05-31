@@ -113,6 +113,21 @@ public class AdminSubjectController {
         return ResponseEntity.ok(students);
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<SubjectResponse>> searchSubjects(@RequestParam String name) {
+        List<Subject> subjects = subjectService.searchSubjectsByName(name);
+        List<SubjectResponse> response = subjects.stream()
+                .map(SubjectResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
 
-
+    @GetMapping("/all")
+    public ResponseEntity<List<SubjectResponse>> getAllSubjects() {
+        List<Subject> subjects = subjectService.getAllSubjects();
+        List<SubjectResponse> response = subjects.stream()
+                .map(SubjectResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
 }

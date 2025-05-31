@@ -116,24 +116,16 @@ public class AdminController {
 
     @GetMapping("/users/search")
     public ResponseEntity<ApiResponse<List<UserDTO>>> searchUsers(
-            @RequestParam(value = "fullname", required = false) String fullname,
-            @RequestParam(value = "email", required = false) String email) {
+            @RequestParam(value = "query", required = false) String query) {
 
         List<UserDTO> users = null;
         String message = "Kết quả tìm kiếm người dùng.";
 
-        if (fullname != null && !fullname.trim().isEmpty()) {
-            users = userService.searchUsersByFullName(fullname);
-            message = "Tìm thấy " + users.size() + " người dùng theo tên: " + fullname;
-        } else if (email != null && !email.trim().isEmpty()) {
-            users = userService.searchUsersByEmail(email);
-            message = "Tìm thấy " + users.size() + " người dùng theo email: " + email;
-        } else if (fullname != null && !fullname.trim().isEmpty() && email != null && !email.trim().isEmpty()) {
-            // Bạn có thể chọn tìm kiếm kết hợp hoặc xử lý riêng lẻ
-            users = userService.searchUsersByNameOrEmail(fullname);
-            message = "Tìm thấy " + users.size() + " người dùng theo tên hoặc email: " + fullname + " / " + email;
+        if (query != null && !query.trim().isEmpty()) {
+            users = userService.searchUsersByNameOrEmail(query);
+            message = "Tìm thấy " + users.size() + " người dùng với từ khóa: " + query;
         } else {
-            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Vui lòng cung cấp tham số tìm kiếm (fullname hoặc email).", null));
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Vui lòng cung cấp từ khóa tìm kiếm.", null));
         }
 
         ApiResponse<List<UserDTO>> response = new ApiResponse<>(true, message, users);

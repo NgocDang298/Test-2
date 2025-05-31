@@ -172,7 +172,11 @@ public class SubjectService {
         return subjectStudentRepository.findSubjectsByStudentId(student.getId());
     }
 
+    public List<Subject> searchSubjectsByName(String name) {
+        return subjectRepository.findByNameContainingIgnoreCase(name);
+    }
 
-
-
+    public List<Subject> getAllSubjects() {
+        return subjectRepository.findAll();
+    }
 }

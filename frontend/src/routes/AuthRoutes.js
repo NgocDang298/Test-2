@@ -4,21 +4,9 @@ import LoginPage from '../pages/LoginPage/LoginPage';
 import RegisterPage from '../pages/RegisterPage/RegisterPage';
 
 const AuthRoutes = ({ user, onLogin }) => {
-    // Nếu đã đăng nhập, chuyển hướng theo role
+    // Nếu đã đăng nhập, chuyển hướng đến trang home
     if (user) {
-        let decoded = user;
-        if (typeof user === 'string') {
-            try {
-                decoded = JSON.parse(user);
-            } catch (e) {
-                // Nếu không phải JSON, bỏ qua parse
-                decoded = { roles: [user] };
-            }
-        }
-        const role = decoded.roles ? decoded.roles[0] : null;
-        if (role === 'TEACHER') return [<Route path="*" element={<Navigate to="/teacher" />} key="teacher-redirect" />];
-        if (role === 'ADMIN') return [<Route path="*" element={<Navigate to="/admin" />} key="admin-redirect" />];
-        if (role === 'STUDENT') return [<Route path="*" element={<Navigate to="/student" />} key="student-redirect" />];
+        return [<Route path="*" element={<Navigate to="/home" />} key="home-redirect" />];
     }
     // Nếu chưa đăng nhập, hiển thị login/register
     return [

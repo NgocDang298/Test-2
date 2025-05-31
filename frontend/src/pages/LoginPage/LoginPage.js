@@ -30,13 +30,7 @@ const LoginPage = ({ onLogin }) => {
         const decodedToken = jwtDecode(response.data.accessToken);
         localStorage.setItem('user', JSON.stringify(decodedToken));
         onLogin(response.data.accessToken);
-        if (decodedToken.roles[0] === 'ADMIN') {
-          navigate('/admin')
-        } else if (decodedToken.roles[0] === 'TEACHER') {
-          navigate('/teacher')
-        } else if (decodedToken.roles[0] === 'STUDENT') {
-          navigate('/student')
-        }
+        navigate('/home');
       }
     } catch (err) {
       setError(err.response?.message || 'Tên đăng nhập hoặc mật khẩu không đúng');

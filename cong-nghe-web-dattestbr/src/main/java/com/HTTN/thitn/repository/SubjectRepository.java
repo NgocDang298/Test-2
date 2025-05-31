@@ -8,6 +8,6 @@ import java.util.List;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     boolean existsByName(String name);
     List<Subject> findByStatus(int status);
-
+    List<Subject> findByNameContainingIgnoreCase(String name);
 }
 

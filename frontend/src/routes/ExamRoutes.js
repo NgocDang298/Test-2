@@ -4,6 +4,8 @@ import ExamPage from '../pages/ExamPage/ExamPage';
 import TakeExamPage from '../pages/TakeExamPage/TakeExamPage';
 import StatisticsPage from '../pages/StatisticsPage/StatisticsPage';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
+import HomePage from '../pages/HomePage/HomePage';
+import ChangePasswordPage from '../pages/ChangePasswordPage/ChangePasswordPage';
 import ProtectedRoute from './ProtectedRoute';
 import ExamManagement from '../pages/ExamManagement/ExamManagement';
 import QuestionPage from '../pages/QuestionPage/QuestionPage';
@@ -13,7 +15,13 @@ import HsExamPage from "../pages/HsExamPage/HsExamPage";
 import HsTakeExamPage from "../pages/HsTakeExamPage/HsTakeExamPage";
 import HsTakeScorePage from "../pages/HsTakeScorePage/HsTakeScorePage";
 import HsReadyPage from "../pages/HsReadyPage/HsReadyPage";
+
 const ExamRoutes = ({ user, onLogout }) => ([
+    <Route path="/home" element={
+        <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+            <HomePage user={user} />
+        </ProtectedRoute>
+    } key="home" />,
 
     <Route path="/teacher" element={
         <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
@@ -35,6 +43,11 @@ const ExamRoutes = ({ user, onLogout }) => ([
             <ProfilePage user={user} onLogout={onLogout} />
         </ProtectedRoute>
     } key="profile" />,
+    <Route path="/change-password" element={
+        <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
+            <ChangePasswordPage />
+        </ProtectedRoute>
+    } key="change-password" />,
     <Route path="/exams/subject/:subjectId" element={
         <ProtectedRoute allowedRoles={['teacher', 'admin', 'student']}>
             <ExamManagement />

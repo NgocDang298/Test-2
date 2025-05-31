@@ -56,22 +56,14 @@ const Navbar = ({ user, onLogout }) => {
           Nền tảng thi trắc nghiệm thông minh
         </div>
         {/* Navigation links */}
-        {/*<div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>*/}
-        {/*  <Link to="/exams" className={location.pathname === '/exams' ? 'active' : ''}>*/}
-        {/*    <i className="fas fa-file-alt"></i>*/}
-        {/*    <span>Danh sách bài thi</span>*/}
-        {/*  </Link>*/}
-        {/*  <Link to="/statistics" className={location.pathname === '/statistics' ? 'active' : ''}>*/}
-        {/*    <i className="fas fa-chart-bar"></i>*/}
-        {/*    <span>Thống kê</span>*/}
-        {/*  </Link>*/}
-        {/*  {user?.role === 'admin' && (*/}
-        {/*    <Link to="/admin" className={location.pathname === '/admin' ? 'active' : ''}>*/}
-        {/*      <i className="fas fa-cog"></i>*/}
-        {/*      <span>Quản lý</span>*/}
-        {/*    </Link>*/}
-        {/*  )}*/}
-        {/*</div>*/}
+        {user && (
+          <div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
+            <Link to="/home" className={location.pathname === '/home' ? 'active' : ''}>
+              <i className="fas fa-home"></i>
+              <span>Trang chủ</span>
+            </Link>
+          </div>
+        )}
 
         {/* User menu */}
         <div className="user-menu">
@@ -81,7 +73,7 @@ const Navbar = ({ user, onLogout }) => {
                 <div className="user-avatar">
                   <i className="fas fa-user"></i>
                 </div>
-                <span className="user-name">{user.name}</span>
+                <span className="user-name">{user.name || user.sub}</span>
                 <i className={`fas fa-chevron-down ${isUserMenuOpen ? 'up' : ''}`}></i>
               </button>
 
@@ -90,6 +82,10 @@ const Navbar = ({ user, onLogout }) => {
                   <Link to="/profile" className="dropdown-item">
                     <i className="fas fa-user-circle"></i>
                     <span>Thông tin cá nhân</span>
+                  </Link>
+                  <Link to="/change-password" className="dropdown-item">
+                    <i className="fas fa-key"></i>
+                    <span>Đổi mật khẩu</span>
                   </Link>
                   <Link to="/my-exams" className="dropdown-item">
                     <i className="fas fa-history"></i>
