@@ -454,12 +454,12 @@ const SubjectManager = ({ refreshStats }) => {
           >
             Chờ duyệt ({pendingSubjects.length})
           </button>
-          <button 
+          {/* <button 
             className={`tab-btn ${activeTab === 'all' ? 'active' : ''}`}
             onClick={() => setActiveTab('all')}
           >
             Tất cả môn học
-          </button>
+          </button> */}
         </div>
       </div>
 

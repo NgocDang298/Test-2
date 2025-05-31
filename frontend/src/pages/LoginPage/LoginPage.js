@@ -3,11 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import '../../services/AuthService'
 import { handleLogin } from '../../services/AuthService';
-import { jwtDecode } from 'jwt-decode';
+import { useUser } from '../../contexts/UserContext';
 import Footer from '../../components/Layout/Footer/Footer';
 
-const LoginPage = ({ onLogin }) => {
+const LoginPage = () => {
   const navigate = useNavigate();
+  const { login } = useUser();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,14 +27,11 @@ const LoginPage = ({ onLogin }) => {
     try {
       const response = await handleLogin(credentials);
       if (response.success === true) {
-        localStorage.setItem('token', response.data.accessToken);
-        const decodedToken = jwtDecode(response.data.accessToken);
-        localStorage.setItem('user', JSON.stringify(decodedToken));
-        onLogin(response.data.accessToken);
+        await login(response.data.accessToken);
         navigate('/home');
       }
     } catch (err) {
-      setError(err.response?.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
+      setError(err.response?.data?.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
     } finally {
       setLoading(false);
     }

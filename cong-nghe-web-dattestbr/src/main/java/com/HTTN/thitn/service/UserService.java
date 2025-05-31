@@ -3,6 +3,7 @@ package com.HTTN.thitn.service;
 import com.HTTN.thitn.dto.Request.RegisterRequest;
 import com.HTTN.thitn.dto.Request.StudentUpdateRequest;
 import com.HTTN.thitn.dto.Request.TeacherUpdateRequest;
+import com.HTTN.thitn.dto.Request.UserUpdateRequest;
 import com.HTTN.thitn.dto.Response.UserDTO;
 import com.HTTN.thitn.entity.Role;
 import com.HTTN.thitn.entity.User;
@@ -124,9 +125,40 @@ public class UserService {
     private UserDTO convertToUserDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
         dto.setFullname(user.getFullname());
         dto.setEmail(user.getEmail());
+        dto.setPhone(user.getPhone());
+        dto.setBirthday(user.getBirthday());
+        dto.setAddress(user.getAddress());
+        
+        // Convert roles to Set<String>
+        Set<String> roleNames = user.getRoles().stream()
+                .map(role -> role.getName())
+                .collect(Collectors.toSet());
+        dto.setRoles(roleNames);
+        
         return dto;
+    }
+
+    public void updateUserProfile(String username, UserUpdateRequest request) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với username: " + username));
+        
+        if (request.getFullname() != null && !request.getFullname().trim().isEmpty()) {
+            user.setFullname(request.getFullname());
+        }
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone());
+        }
+        if (request.getBirthday() != null) {
+            user.setBirthday(request.getBirthday());
+        }
+        if (request.getAddress() != null) {
+            user.setAddress(request.getAddress());
+        }
+        
+        userRepository.save(user);
     }
 
     public Optional<String> deleteStudentById(Long studentId) {

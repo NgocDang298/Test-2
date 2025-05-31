@@ -6,7 +6,7 @@ import ProtectedRoute from './ProtectedRoute';
 import AdminDashBoard from '../pages/AdminDashboard/AdminDashboard';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
 
-const AdminRoutes = ({ onLogout }) => ([
+const AdminRoutes = () => ([
     // Route cha: /admin (render AdminDashboard)
     <Route path="/admin" element={
         <ProtectedRoute allowedRoles={['ADMIN']}>

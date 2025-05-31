@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +33,15 @@ public class User {
 
     @Column(unique = true, nullable = false)
     private String email;
+
+    @Column
+    private String phone;
+
+    @Column
+    private LocalDate birthday;
+
+    @Column
+    private String address;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

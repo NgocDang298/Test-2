@@ -16,31 +16,31 @@ import HsTakeExamPage from "../pages/HsTakeExamPage/HsTakeExamPage";
 import HsTakeScorePage from "../pages/HsTakeScorePage/HsTakeScorePage";
 import HsReadyPage from "../pages/HsReadyPage/HsReadyPage";
 
-const ExamRoutes = ({ user, onLogout }) => ([
+const ExamRoutes = () => ([
     <Route path="/home" element={
         <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
-            <HomePage user={user} />
+            <HomePage />
         </ProtectedRoute>
     } key="home" />,
 
     <Route path="/teacher" element={
         <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
-            <ExamPage user={user} />
+            <ExamPage />
         </ProtectedRoute>
     } key="exam-home" />,
     <Route path="/exam/:id" element={
         <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
-            <TakeExamPage user={user} />
+            <TakeExamPage />
         </ProtectedRoute>
     } key="take-exam" />,
     <Route path="/statistics" element={
         <ProtectedRoute allowedRoles={['teacher', 'admin']}>
-            <StatisticsPage user={user} />
+            <StatisticsPage />
         </ProtectedRoute>
     } key="statistics" />,
     <Route path="/profile" element={
         <ProtectedRoute allowedRoles={['student', 'teacher', 'admin']}>
-            <ProfilePage user={user} onLogout={onLogout} />
+            <ProfilePage />
         </ProtectedRoute>
     } key="profile" />,
     <Route path="/change-password" element={

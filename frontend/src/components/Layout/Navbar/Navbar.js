@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './Navbar.css';
+import { useUser } from '../../../contexts/UserContext';
 
-const Navbar = ({ user, onLogout }) => {
+const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  // Xử lý scroll để thay đổi style của navbar
+  const { user, userProfile, logout, isAuthenticated } = useUser();
+
+  // Use userProfile if available, otherwise fall back to user
+  const currentUser = userProfile || user;
+
+  // Handle scroll to change navbar style
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -17,7 +23,7 @@ const Navbar = ({ user, onLogout }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Đóng mobile menu khi chuyển trang
+  // Close mobile menu when changing pages
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
@@ -35,8 +41,15 @@ const Navbar = ({ user, onLogout }) => {
 
   const handleLogout = () => {
     setIsUserMenuOpen(false);
-    onLogout();
+    logout();
     navigate('/login');
+  };
+
+  const getUserDisplayName = () => {
+    if (currentUser?.fullname) return currentUser.fullname;
+    if (currentUser?.username) return currentUser.username;
+    if (currentUser?.sub) return currentUser.sub;
+    return 'User';
   };
 
   return (
@@ -56,7 +69,7 @@ const Navbar = ({ user, onLogout }) => {
           Nền tảng thi trắc nghiệm thông minh
         </div>
         {/* Navigation links */}
-        {user && (
+        {isAuthenticated && (
           <div className={`nav-links ${isMobileMenuOpen ? 'active' : ''}`}>
             <Link to="/home" className={location.pathname === '/home' ? 'active' : ''}>
               <i className="fas fa-home"></i>
@@ -67,13 +80,13 @@ const Navbar = ({ user, onLogout }) => {
 
         {/* User menu */}
         <div className="user-menu">
-          {user ? (
+          {isAuthenticated ? (
             <div className="user-menu-container">
               <button className="user-menu-button" onClick={toggleUserMenu}>
                 <div className="user-avatar">
                   <i className="fas fa-user"></i>
                 </div>
-                <span className="user-name">{user.name || user.sub}</span>
+                <span className="user-name">{getUserDisplayName()}</span>
                 <i className={`fas fa-chevron-down ${isUserMenuOpen ? 'up' : ''}`}></i>
               </button>
 
