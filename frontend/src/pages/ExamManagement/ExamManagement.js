@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, message, Tooltip } from 'antd';
-import { EyeOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table, Button, Modal, Form, Input, message, Tooltip, List, Avatar, Card, Row, Col } from 'antd';
+import { EyeOutlined, EditOutlined, DeleteOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
 
 import { useParams, useNavigate } from 'react-router-dom';
 import { UserAddOutlined } from '@ant-design/icons';
@@ -15,14 +15,18 @@ const ExamManagement = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
     const [isAddStudentModal, setIsAddStudentModal] = useState(false);
-    const [studentId, setStudentId] = useState('');
     const [isStudentListModal, setIsStudentListModal] = useState(false);
     const [studentList, setStudentList] = useState([]);
+    const [allStudents, setAllStudents] = useState([]);
     const [loadingStudentList, setLoadingStudentList] = useState(false);
+    const [loadingAllStudents, setLoadingAllStudents] = useState(false);
     const [editingExam, setEditingExam] = useState(null);
     const [isEditModalVisible, setIsEditModalVisible] = useState(false);
     const [editForm] = Form.useForm();
     const [deleteExamId, setDeleteExamId] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [addingStudent, setAddingStudent] = useState(null);
+
     useEffect(() => {
         fetchExams();
         // eslint-disable-next-line
@@ -70,11 +74,53 @@ const ExamManagement = () => {
             message.error('Thêm đề thi thất bại');
         }
     };
-    const handleAddStudent = async () => {
-        if (!studentId) {
-            message.warning('Vui lòng nhập mã học sinh!');
-            return;
+
+    const fetchAllStudents = async () => {
+        setLoadingAllStudents(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axiosInstance.get('/api/teacher/student/findall', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            setAllStudents(response.data.data || response.data);
+        } catch (error) {
+            message.error('Không thể tải danh sách tất cả học sinh');
+        } finally {
+            setLoadingAllStudents(false);
         }
+    };
+
+    const handleShowAddStudentModal = async () => {
+        setIsAddStudentModal(true);
+        await Promise.all([
+            fetchStudentsInSubject(),
+            fetchAllStudents()
+        ]);
+    };
+
+    const fetchStudentsInSubject = async () => {
+        setLoadingStudentList(true);
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axiosInstance.get(`/api/teacher/subjects/${subjectId}/students`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            setStudentList(response.data);
+        } catch (error) {
+            message.error('Không thể tải danh sách học sinh trong môn học');
+        } finally {
+            setLoadingStudentList(false);
+        }
+    };
+
+    const handleAddStudent = async (studentId) => {
+        setAddingStudent(studentId);
         try {
             const token = localStorage.getItem('token');
             await axiosInstance.post(
@@ -88,35 +134,42 @@ const ExamManagement = () => {
                 }
             );
             message.success('Thêm học sinh thành công');
-            setIsAddStudentModal(false);
-            setStudentId('');
+            // Refresh both lists
+            await fetchStudentsInSubject();
         } catch (error) {
             message.error(
                 error.response?.data?.message || 'Thêm học sinh thất bại'
             );
+        } finally {
+            setAddingStudent(null);
         }
     };
-    const handleShowStudentList = async () => {
-        setIsStudentListModal(true);
-        setLoadingStudentList(true);
+
+    const handleRemoveStudent = async (studentId) => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axiosInstance.get(`/api/teacher/subjects/${subjectId}/students`, {
+            await axiosInstance.delete(`/api/teacher/subjects/${subjectId}/students/${studentId}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
-            setStudentList(res.data);
+            message.success('Gỡ học sinh thành công');
+            await fetchStudentsInSubject();
         } catch (error) {
-            message.error('Không thể lấy danh sách học sinh');
-        } finally {
-            setLoadingStudentList(false);
+            message.error('Gỡ học sinh thất bại');
         }
     };
+
+    const handleShowStudentList = async () => {
+        setIsStudentListModal(true);
+        await fetchStudentsInSubject();
+    };
+
     const handleDeleteExam = (examId) => {
         setDeleteExamId(examId);
     };
+
     const confirmDeleteExam = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -133,6 +186,7 @@ const ExamManagement = () => {
             message.error('Xóa đề thi thất bại');
         }
     };
+
     const handleEditExam = (exam) => {
         setEditingExam(exam);
         setIsEditModalVisible(true);
@@ -162,6 +216,23 @@ const ExamManagement = () => {
         } catch (error) {
             message.error('Cập nhật đề thi thất bại');
         }
+    };
+
+    const getFilteredStudents = () => {
+        if (!searchTerm.trim()) return allStudents;
+        
+        return allStudents.filter(student => 
+            student.fullname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            student.username?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+    };
+
+    const getAvailableStudents = () => {
+        const filteredStudents = getFilteredStudents();
+        return filteredStudents.filter(student => 
+            !studentList.some(enrolled => enrolled.id === student.id)
+        );
     };
 
     const columns = [
@@ -225,9 +296,9 @@ const ExamManagement = () => {
                         className="add-exam-btn"
                         icon={<UserAddOutlined />}
                         type="dashed"
-                        onClick={() => setIsAddStudentModal(true)}
+                        onClick={handleShowAddStudentModal}
                     >
-                        Thêm học sinh vào môn học
+                        Quản lý học sinh
                     </Button>
                     <Button
                         className="add-exam-btn"
@@ -245,7 +316,6 @@ const ExamManagement = () => {
                     >
                         Tạo đề thi
                     </Button>
-
                 </div>
             </div>
             <div className="table-container">
@@ -258,6 +328,8 @@ const ExamManagement = () => {
                     pagination={{ pageSize: 5 }}
                 />
             </div>
+
+            {/* Add Exam Modal */}
             <Modal
                 title="Thêm đề thi mới"
                 open={isModalVisible}
@@ -293,43 +365,142 @@ const ExamManagement = () => {
                     </Form.Item>
                 </Form>
             </Modal>
+
+            {/* Student Management Modal */}
             <Modal
-                title="Thêm học sinh vào môn học"
+                title="Quản lý học sinh trong môn học"
                 open={isAddStudentModal}
-                onCancel={() => setIsAddStudentModal(false)}
-                onOk={handleAddStudent}
-                okText="Thêm"
-                cancelText="Hủy"
+                onCancel={() => {
+                    setIsAddStudentModal(false);
+                    setSearchTerm('');
+                }}
+                footer={null}
+                width={1000}
             >
-                <Input
-                    placeholder="Nhập mã học sinh"
-                    value={studentId}
-                    onChange={e => setStudentId(e.target.value)}
-                    onPressEnter={handleAddStudent}
-                />
+                <Row gutter={[16, 16]}>
+                    <Col span={12}>
+                        <Card 
+                            title={`Học sinh đã tham gia (${studentList.length})`} 
+                            size="small"
+                            loading={loadingStudentList}
+                        >
+                            <List
+                                dataSource={studentList}
+                                renderItem={(student) => (
+                                    <List.Item
+                                        actions={[
+                                            <Button
+                                                type="primary"
+                                                danger
+                                                size="small"
+                                                onClick={() => handleRemoveStudent(student.id)}
+                                            >
+                                                Gỡ
+                                            </Button>
+                                        ]}
+                                    >
+                                        <List.Item.Meta
+                                            avatar={<Avatar icon={<UserOutlined />} />}
+                                            title={student.fullname}
+                                            description={
+                                                <div>
+                                                    <div>{student.email}</div>
+                                                    <div style={{ fontSize: '12px', color: '#666' }}>
+                                                        @{student.username}
+                                                    </div>
+                                                </div>
+                                            }
+                                        />
+                                    </List.Item>
+                                )}
+                                locale={{ emptyText: 'Chưa có học sinh nào tham gia' }}
+                            />
+                        </Card>
+                    </Col>
+                    
+                    <Col span={12}>
+                        <Card 
+                            title="Thêm học sinh mới" 
+                            size="small"
+                            extra={
+                                <Input
+                                    placeholder="Tìm kiếm học sinh..."
+                                    prefix={<SearchOutlined />}
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    style={{ width: 200 }}
+                                />
+                            }
+                            loading={loadingAllStudents}
+                        >
+                            <List
+                                dataSource={getAvailableStudents()}
+                                renderItem={(student) => (
+                                    <List.Item
+                                        actions={[
+                                            <Button
+                                                type="primary"
+                                                size="small"
+                                                loading={addingStudent === student.id}
+                                                onClick={() => handleAddStudent(student.id)}
+                                            >
+                                                Thêm
+                                            </Button>
+                                        ]}
+                                    >
+                                        <List.Item.Meta
+                                            avatar={<Avatar icon={<UserOutlined />} />}
+                                            title={student.fullname}
+                                            description={
+                                                <div>
+                                                    <div>{student.email}</div>
+                                                    <div style={{ fontSize: '12px', color: '#666' }}>
+                                                        @{student.username}
+                                                    </div>
+                                                </div>
+                                            }
+                                        />
+                                    </List.Item>
+                                )}
+                                locale={{ emptyText: searchTerm ? 'Không tìm thấy học sinh nào' : 'Tất cả học sinh đã được thêm' }}
+                            />
+                        </Card>
+                    </Col>
+                </Row>
             </Modal>
+
+            {/* Student List Modal */}
             <Modal
-                title="Danh sách học sinh"
+                title="Danh sách học sinh trong môn học"
                 open={isStudentListModal}
                 onCancel={() => setIsStudentListModal(false)}
                 footer={null}
+                width={600}
             >
-                {loadingStudentList ? (
-                    <div>Đang tải...</div>
-                ) : (
-                    <ul>
-                        {studentList.length === 0 ? (
-                            <li>Không có học sinh nào.</li>
-                        ) : (
-                            studentList.map((student) => (
-                                <li key={student.id}>
-                                    <b>{student.fullname}</b> ({student.username}) - {student.email}
-                                </li>
-                            ))
+                <Card loading={loadingStudentList}>
+                    <List
+                        dataSource={studentList}
+                        renderItem={(student) => (
+                            <List.Item>
+                                <List.Item.Meta
+                                    avatar={<Avatar icon={<UserOutlined />} />}
+                                    title={student.fullname}
+                                    description={
+                                        <div>
+                                            <div><strong>Email:</strong> {student.email}</div>
+                                            <div><strong>Username:</strong> @{student.username}</div>
+                                            {student.phone && <div><strong>SĐT:</strong> {student.phone}</div>}
+                                        </div>
+                                    }
+                                />
+                            </List.Item>
                         )}
-                    </ul>
-                )}
+                        locale={{ emptyText: 'Chưa có học sinh nào tham gia môn học này' }}
+                    />
+                </Card>
             </Modal>
+
+            {/* Edit Exam Modal */}
             <Modal
                 title="Sửa đề thi"
                 open={isEditModalVisible}
@@ -365,6 +536,8 @@ const ExamManagement = () => {
                     </Form.Item>
                 </Form>
             </Modal>
+
+            {/* Delete Confirmation Modal */}
             <Modal
                 title="Xác nhận xoá"
                 open={!!deleteExamId}

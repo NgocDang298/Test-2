@@ -1,6 +1,5 @@
 package com.HTTN.thitn.controller;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import com.HTTN.thitn.dto.Request.RegisterRequest;
 import com.HTTN.thitn.dto.Request.StudentUpdateRequest;
 import com.HTTN.thitn.dto.Request.TeacherUpdateRequest;
@@ -22,7 +21,7 @@ import java.util.Optional;
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
-	private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+
     private final UserService userService;
 
     @PutMapping("/students/update/{studentId}")
@@ -90,27 +89,15 @@ public class AdminController {
     @PostMapping("/teachers/register")
     public ResponseEntity<ApiResponse<String>> registerTeacherByAdmin(
             @RequestBody @Valid RegisterRequest request) {
-
-        logger.info("Admin attempting to register new teacher with username: {}", request.getUsername());
-
         try {
             userService.registerTeacher(request);
-            String successMessage = String.format("Đã đăng ký thành công tài khoản cho giáo viên: %s", request.getUsername());
-            logger.info("Teacher registration successful for username: {}", request.getUsername());
-
-            ApiResponse<String> response = new ApiResponse<>(true, successMessage, null);
+            ApiResponse<String> response = new ApiResponse<>(true,
+                    String.format("Đã đăng ký thành công tài khoản cho giáo viên: %s", request.getUsername()),
+                    null);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
-
         } catch (IllegalArgumentException e) {
-            logger.warn("Teacher registration failed for username: {}. Reason: {}", request.getUsername(), e.getMessage());
-
             ApiResponse<String> response = new ApiResponse<>(false, e.getMessage(), null);
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            logger.error("Unexpected error during teacher registration for username: {}", request.getUsername(), e);
-
-            ApiResponse<String> response = new ApiResponse<>(false, "Lỗi không xác định trong quá trình đăng ký.", null);
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

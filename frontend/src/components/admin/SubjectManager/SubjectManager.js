@@ -67,7 +67,8 @@ const SubjectManager = ({ refreshStats }) => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   
   // Form states
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [createForm] = Form.useForm();
+  const [editForm] = Form.useForm();
   const [selectedSubject, setSelectedSubject] = useState(null);
   const [subjectTeachers, setSubjectTeachers] = useState([]);
   const [subjectStudents, setSubjectStudents] = useState([]);
@@ -159,7 +160,10 @@ const SubjectManager = ({ refreshStats }) => {
   const handleApproveSubject = async (subjectId) => {
     try {
       await approveSubject(subjectId);
-      await fetchPendingSubjects();
+      await Promise.all([
+        fetchPendingSubjects(),
+        fetchAllSubjects()
+      ]);
       if (refreshStats) refreshStats();
       toast.success('Môn học đã được duyệt thành công!');
     } catch (err) {
@@ -170,7 +174,10 @@ const SubjectManager = ({ refreshStats }) => {
   const handleRejectSubject = async (subjectId) => {
     try {
       await rejectSubject(subjectId);
-      await fetchPendingSubjects();
+      await Promise.all([
+        fetchPendingSubjects(),
+        fetchAllSubjects()
+      ]);
       if (refreshStats) refreshStats();
       toast.success('Môn học đã bị từ chối.');
     } catch (err) {
@@ -178,12 +185,11 @@ const SubjectManager = ({ refreshStats }) => {
     }
   };
 
-  const handleCreateSubject = async (e) => {
-    e.preventDefault();
+  const handleCreateSubject = async (values) => {
     try {
-      await createSubjectByAdmin(formData);
+      await createSubjectByAdmin(values);
       setShowCreateModal(false);
-      setFormData({ name: '', description: '' });
+      createForm.resetFields();
       await fetchData();
       toast.success('Tạo môn học thành công!');
     } catch (err) {
@@ -191,12 +197,11 @@ const SubjectManager = ({ refreshStats }) => {
     }
   };
 
-  const handleUpdateSubject = async (e) => {
-    e.preventDefault();
+  const handleUpdateSubject = async (values) => {
     try {
-      await updateSubjectByAdmin(selectedSubject.id, formData);
+      await updateSubjectByAdmin(selectedSubject.id, values);
       setShowEditModal(false);
-      setFormData({ name: '', description: '' });
+      editForm.resetFields();
       setSelectedSubject(null);
       await fetchData();
       toast.success('Cập nhật môn học thành công!');
@@ -382,6 +387,17 @@ const SubjectManager = ({ refreshStats }) => {
     setRemovingStudent(null);
   };
 
+  const handleCloseCreateModal = () => {
+    setShowCreateModal(false);
+    createForm.resetFields();
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    editForm.resetFields();
+    setSelectedSubject(null);
+  };
+
   const renderPendingSubjects = () => (
     <div className="pending-subjects">
       <h3>Môn học chờ duyệt ({pendingSubjects.length})</h3>
@@ -496,7 +512,7 @@ const SubjectManager = ({ refreshStats }) => {
                   className="btn btn-warning"
                   onClick={() => {
                     setSelectedSubject(subject);
-                    setFormData({ name: subject.name, description: subject.description });
+                    editForm.setFieldsValue({ name: subject.name, description: subject.description });
                     setShowEditModal(true);
                   }}
                 >
@@ -573,14 +589,14 @@ const SubjectManager = ({ refreshStats }) => {
       <Modal
         title="Tạo môn học mới"
         open={showCreateModal}
-        onCancel={() => setShowCreateModal(false)}
+        onCancel={handleCloseCreateModal}
         footer={null}
         width={600}
       >
         <Form
           layout="vertical"
           onFinish={handleCreateSubject}
-          initialValues={formData}
+          form={createForm}
         >
           <Form.Item
             label="Tên môn học"
@@ -588,8 +604,6 @@ const SubjectManager = ({ refreshStats }) => {
             rules={[{ required: true, message: 'Vui lòng nhập tên môn học!' }]}
           >
             <Input
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
               placeholder="Nhập tên môn học"
             />
           </Form.Item>
@@ -601,14 +615,12 @@ const SubjectManager = ({ refreshStats }) => {
           >
             <TextArea
               rows={4}
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
               placeholder="Nhập mô tả môn học"
             />
           </Form.Item>
           
           <Form.Item className="modal-actions">
-            <Button onClick={() => setShowCreateModal(false)} style={{ marginRight: 8 }}>
+            <Button onClick={handleCloseCreateModal} style={{ marginRight: 8 }}>
               Hủy
             </Button>
             <Button type="primary" htmlType="submit" icon={<PlusOutlined />}>
@@ -622,14 +634,14 @@ const SubjectManager = ({ refreshStats }) => {
       <Modal
         title="Chỉnh sửa môn học"
         open={showEditModal}
-        onCancel={() => setShowEditModal(false)}
+        onCancel={handleCloseEditModal}
         footer={null}
         width={600}
       >
         <Form
           layout="vertical"
           onFinish={handleUpdateSubject}
-          initialValues={formData}
+          form={editForm}
         >
           <Form.Item
             label="Tên môn học"
@@ -637,8 +649,6 @@ const SubjectManager = ({ refreshStats }) => {
             rules={[{ required: true, message: 'Vui lòng nhập tên môn học!' }]}
           >
             <Input
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
               placeholder="Nhập tên môn học"
             />
           </Form.Item>
@@ -650,14 +660,12 @@ const SubjectManager = ({ refreshStats }) => {
           >
             <TextArea
               rows={4}
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
               placeholder="Nhập mô tả môn học"
             />
           </Form.Item>
           
           <Form.Item className="modal-actions">
-            <Button onClick={() => setShowEditModal(false)} style={{ marginRight: 8 }}>
+            <Button onClick={handleCloseEditModal} style={{ marginRight: 8 }}>
               Hủy
             </Button>
             <Button type="primary" htmlType="submit" icon={<EditOutlined />}>

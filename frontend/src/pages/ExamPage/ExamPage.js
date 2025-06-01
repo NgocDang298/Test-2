@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './ExamPage.css';
 import { useNavigate } from 'react-router-dom';
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Modal, Form, Input } from 'antd';
 import axiosInstance from "../../services/axiosInstance";
+
+const { TextArea } = Input;
 
 // Hàm lấy đường dẫn ảnh từ thư mục public/images
 const getSubjectImage = (name) => {
@@ -29,9 +31,9 @@ const ExamPage = () => {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [editSubject, setEditSubject] = useState(null);
-  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [form] = Form.useForm();
 
   const navigate = useNavigate();
 
@@ -65,47 +67,53 @@ const ExamPage = () => {
 
   const openAddForm = () => {
     setEditSubject(null);
-    setFormData({ name: '', description: '' });
-    setShowForm(true);
+    form.resetFields();
+    setShowModal(true);
   };
 
   const openEditForm = (subject) => {
     setEditSubject(subject);
-    setFormData({ name: subject.name, description: subject.description });
-    setShowForm(true);
+    form.setFieldsValue({
+      name: subject.name,
+      description: subject.description
+    });
+    setShowModal(true);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (values) => {
     const token = localStorage.getItem('token');
     try {
       if (editSubject) {
         await axiosInstance.put(
             `/api/teacher/subjects/${editSubject.id}`,
-            formData,
+            values,
             { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         await axiosInstance.post(
             '/api/teacher/subjects',
-            formData,
+            values,
             { headers: { Authorization: `Bearer ${token}` } }
         );
       }
-      setShowForm(false);
+      setShowModal(false);
+      form.resetFields();
       fetchSubjects(); // Làm mới danh sách sau khi thêm/sửa
     } catch (err) {
       alert('Lưu thất bại!');
     }
   };
 
-  const closeForm = () => setShowForm(false);
+  const closeModal = () => {
+    setShowModal(false);
+    form.resetFields();
+  };
 
   if (loading) return <p className="loading">Đang tải dữ liệu...</p>;
   if (error) return <p className="error">Lỗi: {error}</p>;
 
   return (
-      <div className={`exam-container main-content ep${showForm ? ' modal-open' : ''}`}>
+      <div className="exam-container main-content ep">
         <h1 className="subject-title">Danh sách môn học của tôi</h1>
         <Button
             onClick={openAddForm}
@@ -115,28 +123,50 @@ const ExamPage = () => {
         >
           Đăng ký môn học
         </Button>
-        {showForm && (
-            <div className="modal">
-              <form className="subject-form" onSubmit={handleSubmit}>
-                <h2>{editSubject ? 'Sửa môn học' : 'Đăng ký môn học'}</h2>
-                <input
-                    type="text"
-                    placeholder="Tên môn học"
-                    value={formData.name}
-                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                    required
-                />
-                <input
-                    type="text"
-                    placeholder="Mô tả"
-                    value={formData.description}
-                    onChange={e => setFormData({ ...formData, description: e.target.value })}
-                />
-                <button type="submit">Lưu</button>
-                <button type="button" onClick={closeForm}>Huỷ</button>
-              </form>
-            </div>
-        )}
+
+        {/* Modal sử dụng Ant Design */}
+        <Modal
+          title={editSubject ? 'Sửa môn học' : 'Đăng ký môn học'}
+          open={showModal}
+          onCancel={closeModal}
+          footer={null}
+          width={600}
+        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+          >
+            <Form.Item
+              label="Tên môn học"
+              name="name"
+              rules={[{ required: true, message: 'Vui lòng nhập tên môn học!' }]}
+            >
+              <Input placeholder="Nhập tên môn học" />
+            </Form.Item>
+            
+            <Form.Item
+              label="Mô tả"
+              name="description"
+              rules={[{ required: true, message: 'Vui lòng nhập mô tả!' }]}
+            >
+              <TextArea
+                rows={4}
+                placeholder="Nhập mô tả môn học"
+              />
+            </Form.Item>
+            
+            <Form.Item className="modal-actions">
+              <Button onClick={closeModal} style={{ marginRight: 8 }}>
+                Hủy
+              </Button>
+              <Button type="primary" htmlType="submit" icon={editSubject ? <EditOutlined /> : <PlusOutlined />}>
+                {editSubject ? 'Cập nhật' : 'Đăng ký'}
+              </Button>
+            </Form.Item>
+          </Form>
+        </Modal>
+
         {subjects.length === 0 ? (
             <p className="no-subjects">Không có môn học nào.</p>
         ) : (

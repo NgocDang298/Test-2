@@ -3,7 +3,6 @@ package com.HTTN.thitn.service;
 import com.HTTN.thitn.dto.Request.RegisterRequest;
 import com.HTTN.thitn.dto.Request.StudentUpdateRequest;
 import com.HTTN.thitn.dto.Request.TeacherUpdateRequest;
-import com.HTTN.thitn.dto.Request.UserUpdateRequest;
 import com.HTTN.thitn.dto.Response.UserDTO;
 import com.HTTN.thitn.entity.Role;
 import com.HTTN.thitn.entity.User;
@@ -32,45 +31,27 @@ public class UserService {
     private final RoleRepository roleRepository;
 
     public void updateStudentInfo(String username, StudentUpdateRequest request) {
-        User user = userRepository.findByUsername(username)
+        User student = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy sinh viên với username: " + username));
-        
-        // Verify user has STUDENT role
-        boolean isStudent = user.getRoles().stream()
-                .anyMatch(role -> "STUDENT".equals(role.getName()));
-        if (!isStudent) {
-            throw new RuntimeException("Người dùng không có quyền sinh viên");
+        if (request.getFullname() != null) {
+            student.setFullname(request.getFullname());
         }
-        
-        if (request.getFullname() != null && !request.getFullname().trim().isEmpty()) {
-            user.setFullname(request.getFullname());
+        if (request.getEmail() != null) {
+            student.setEmail(request.getEmail());
         }
-        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
-            user.setEmail(request.getEmail());
-        }
-        
-        userRepository.save(user);
+        userRepository.save(student);
     }
 
     public void updateTeacherInfo(String username, TeacherUpdateRequest request) {
-        User user = userRepository.findByUsername(username)
+        User teacher = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy giáo viên với username: " + username));
-        
-        // Verify user has TEACHER role
-        boolean isTeacher = user.getRoles().stream()
-                .anyMatch(role -> "TEACHER".equals(role.getName()));
-        if (!isTeacher) {
-            throw new RuntimeException("Người dùng không có quyền giáo viên");
+        if (request.getFullname() != null) {
+            teacher.setFullname(request.getFullname());
         }
-        
-        if (request.getFullname() != null && !request.getFullname().trim().isEmpty()) {
-            user.setFullname(request.getFullname());
+        if (request.getEmail() != null) {
+            teacher.setEmail(request.getEmail());
         }
-        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
-            user.setEmail(request.getEmail());
-        }
-        
-        userRepository.save(user);
+        userRepository.save(teacher);
     }
 
     public void updateStudentById(Long studentId, StudentUpdateRequest request) {
@@ -143,31 +124,9 @@ public class UserService {
     private UserDTO convertToUserDTO(User user) {
         UserDTO dto = new UserDTO();
         dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
         dto.setFullname(user.getFullname());
         dto.setEmail(user.getEmail());
-        
-        // Convert roles to Set<String>
-        Set<String> roleNames = user.getRoles().stream()
-                .map(role -> role.getName())
-                .collect(Collectors.toSet());
-        dto.setRoles(roleNames);
-        
         return dto;
-    }
-
-    public void updateUserProfile(String username, UserUpdateRequest request) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với username: " + username));
-        
-        if (request.getFullname() != null && !request.getFullname().trim().isEmpty()) {
-            user.setFullname(request.getFullname());
-        }
-        if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
-            user.setEmail(request.getEmail());
-        }
-        
-        userRepository.save(user);
     }
 
     public Optional<String> deleteStudentById(Long studentId) {
@@ -226,17 +185,4 @@ public class UserService {
 
         userRepository.save(newTeacher);
     }
-    public UserDTO getUserProfile(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy người dùng với username: " + username));
-        
-        System.out.println("getUserProfile - User: " + user.getUsername());
-        System.out.println("getUserProfile - User roles: " + user.getRoles());
-        
-        UserDTO dto = convertToUserDTO(user);
-        System.out.println("getUserProfile - DTO roles: " + dto.getRoles());
-        
-        return dto;
-    }
 }
-
